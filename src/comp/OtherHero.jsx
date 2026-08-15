@@ -65,7 +65,7 @@ export default function OtherHero({
     const reduced = useReducedMotion();
 
     return (
-        <section className="relative overflow-hidden" style={{ minHeight, background: EMERALD }}>
+        <section id="hero-section" className="relative overflow-hidden" style={{ minHeight, background: EMERALD }}>
             {/* ── Background image ────────────────────────────────── */}
             <div className="absolute inset-0" aria-hidden="true">
                 <img src={bgImage} alt="" className="h-full w-full object-cover" />

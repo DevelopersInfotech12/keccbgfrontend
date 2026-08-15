@@ -326,8 +326,8 @@ export default function Industries() {
               type="button"
               onClick={() => scrollByCards(-1)}
               aria-label="Scroll left"
-              className="grid h-10 w-10 place-items-center rounded-full transition-transform duration-200 hover:-translate-y-0.5"
-              style={{ background: TEAL, color: "#fff" }}
+              className="grid h-10 w-10 place-items-center rounded-full transition-transform duration-200 hover:-translate-y-0.5 border border-[#FF7D44]"
+              style={{ color: "#FF7D44" }}
             >
               <ArrowUpRight className="h-4 w-4 rotate-[225deg]" aria-hidden="true" />
             </button>

@@ -81,7 +81,7 @@ export default function SocialDock() {
                                     initial="closed"
                                     animate="open"
                                     exit="closed"
-                                    className="flex flex-col items-center gap-2 rounded-r-2xl border border-l-0 border-white/10 py-3 pl-2 pr-2.5 bg-white/90"
+                                    className="flex flex-col items-center gap-2 rounded-r-2xl border border-l-0 border-white/10 py-3 pl-1.5 pr-2 bg-white/90"
                                 >
                                     {SOCIALS.map(({ key, label, href, Icon }) => (
                                         <motion.a
@@ -93,7 +93,7 @@ export default function SocialDock() {
                                             aria-label={label}
                                             whileHover={{ scale: 1.1, backgroundColor: ORANGE }}
                                             whileTap={{ scale: 0.92 }}
-                                            className="grid h-9 w-9 place-items-center rounded-lg bg-white/10 transition-colors text-ink-500"
+                                            className="grid h-8 w-8 place-items-center rounded-lg bg-white/10 transition-colors text-ink-500"
                                         >
                                             <Icon className="h-4 w-4" strokeWidth={2} aria-hidden="true" />
                                         </motion.a>
@@ -108,16 +108,16 @@ export default function SocialDock() {
                             onClick={() => setOpen((v) => !v)}
                             aria-expanded={open}
                             aria-label={open ? "Hide social links" : "Show social links"}
-                            className="flex cursor-pointer flex-col items-center gap-3 rounded-r-2xl border border-l-0 border-white/10 sm:px-2.5 px-2.5 py-4 bg-white/90 text-ink-500"
+                            className="flex cursor-pointer flex-col items-center gap-3 rounded-r-2xl border border-l-0 border-white/10 sm:px-2 px-2 py-4 bg-white/90 text-ink-500"
                         >
                             <Share2
-                                className="h-3.5 w-3.5 ml-2"
+                                className="h-3.5 w-3.5 ml-1.5"
                                 strokeWidth={2.2}
                                 style={{ color: ORANGE }}
                                 aria-hidden="true"
                             />
                             <span
-                                className="text-[13px] ml-2 font-semibold uppercase tracking-[0.2em] text-ink-500"
+                                className="text-[13px] ml-1.5 font-semibold uppercase tracking-[0.2em] text-ink-500"
                                 style={{ writingMode: "vertical-rl" }}
                             >
                                 Social

@@ -9,7 +9,7 @@ import {
 import { Label, Input, Textarea, SectionCard, BlockEditor } from "@/comp/admin/FormControls";
 import { useAdminAuth } from "@/lib/useAdminAuth";
 import { adminApi } from "@/lib/adminApi";
-import { C, TAGS, TAG_COLORS, EMPTY_BLOG } from "@/lib/adminConstants";
+import { C, TAGS, TAG_COLORS, EMPTY_BLOG, BLOG_CATEGORIES } from "@/lib/adminConstants";
 
 export default function AdminBlogFormScreen({ blogId }) {
   const router = useRouter();
@@ -112,8 +112,8 @@ export default function AdminBlogFormScreen({ blogId }) {
 
   const handleSave = async (e) => {
     e.preventDefault();
-    if (!form.title || !form.tag || !form.excerpt || !form.date || !form.img) {
-      showToast("error", "Title, Tag, Excerpt, Date and Image are required.");
+    if (!form.title || !form.category || !form.tag || !form.excerpt || !form.date || !form.img) {
+      showToast("error", "Title, Blog Section, Tag, Excerpt, Date and Image are required.");
       return;
     }
     setSaving(true);
@@ -239,6 +239,33 @@ export default function AdminBlogFormScreen({ blogId }) {
                 <div>
                   <Label required>Title</Label>
                   <Input value={form.title} onChange={(e) => { set("title", e.target.value); if (!isEdit) set("slug", autoSlug(e.target.value)); }} placeholder="Blog title…" />
+                </div>
+                <div>
+                  <Label required>Blog Section</Label>
+                  <div style={{ display: "flex", gap: 10 }}>
+                    {BLOG_CATEGORIES.map((c) => {
+                      const on = form.category === c.key;
+                      return (
+                        <button
+                          key={c.key}
+                          type="button"
+                          onClick={() => set("category", c.key)}
+                          style={{
+                            flex: 1, padding: "10px 14px", borderRadius: 8, cursor: "pointer",
+                            fontFamily: C.sans, fontSize: 13, fontWeight: 600, textAlign: "center",
+                            border: `1.5px solid ${on ? C.accent : C.border}`,
+                            background: on ? C.accentLight : "#fff",
+                            color: on ? C.accentDark : C.body,
+                          }}
+                        >
+                          {c.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <div style={{ fontSize: 11.5, color: C.muted, marginTop: 5 }}>
+                    Decides which blog listing this post appears under — KEC Insights or The BioEnergy Brief.
+                  </div>
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                   <div><Label required>Slug</Label><Input value={form.slug} onChange={(e) => set("slug", e.target.value)} placeholder="blog-slug" /></div>

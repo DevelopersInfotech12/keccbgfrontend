@@ -1,5 +1,6 @@
 import Header from "@/comp/Header";
 import WhyStrategicLocationMatters from "@/comp/WhyStrategicLocationMatters";
+import StateProject from "@/comp/StateProject";
 import CTASection from "@/comp/CTASection";
 import Footer from "@/comp/Footer";
 import OtherHero from "@/comp/OtherHero";
@@ -21,6 +22,7 @@ export default function StrategicLocationScreen() {
       />
       <div className="pt-[calc(96px+1.5rem)] sm:pt-[calc(104px+2rem)]" />
       <WhyStrategicLocationMatters />
+      <StateProject />
       <CTASection />
       <Footer />
     </main>

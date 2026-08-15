@@ -20,6 +20,15 @@ import OtherHero from "@/comp/OtherHero";
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 const CATEGORIES = ["All", ...Object.keys(tagColors)];
 
+// Two public blog verticals — every post is assigned to exactly one by the
+// admin. "All" shows both together; picking one filters to just that
+// section, same UI/layout either way.
+const SECTIONS = [
+  { key: "all", label: "All" },
+  { key: "kec-insights", label: "KEC Insights" },
+  { key: "bioenergy-brief", label: "The BioEnergy Brief" },
+];
+
 // color den — swap here, whole page follow
 const TAG_FALLBACK = "#218452";
 const INK_900 = "#0A1310";
@@ -134,6 +143,7 @@ function LatestCard({ post }) {
 }
 
 export default function BlogScreen() {
+  const [activeSection, setActiveSection] = useState("all");
   const [activeCategory, setActiveCategory] = useState("All");
   const [allBlogs, setAllBlogs] = useState(FALLBACK_BLOGS);
 
@@ -151,10 +161,11 @@ export default function BlogScreen() {
     })();
   }, []);
 
-  const filtered = useMemo(
-    () => (activeCategory === "All" ? allBlogs : allBlogs.filter((p) => p.tag === activeCategory)),
-    [activeCategory, allBlogs]
-  );
+  const filtered = useMemo(() => {
+    let list = activeSection === "all" ? allBlogs : allBlogs.filter((p) => p.category === activeSection);
+    if (activeCategory !== "All") list = list.filter((p) => p.tag === activeCategory);
+    return list;
+  }, [activeSection, activeCategory, allBlogs]);
 
   const featured = filtered[0] || null;
   const rest = filtered.slice(1);
@@ -165,7 +176,10 @@ export default function BlogScreen() {
   // through to the Latest Articles grid instead, where a single card is
   // completely normal.
   const middleBand = remainder.length >= 2 ? remainder.slice(0, 2) : [];
-  const latest = remainder.length >= 2 ? remainder.slice(2) : remainder;
+  // Latest Articles is one row only — grid maxes at 4 cols (lg breakpoint),
+  // so cap here instead of dumping every remaining post into the grid.
+  const LATEST_ROW_MAX = 4;
+  const latest = (remainder.length >= 2 ? remainder.slice(2) : remainder).slice(0, LATEST_ROW_MAX);
 
   return (
     <main className="min-h-screen bg-mist-50">
@@ -180,12 +194,33 @@ export default function BlogScreen() {
       {/* <div className="pt-[calc(96px+1.5rem)] sm:pt-[calc(104px+2rem)]" /> */}
 
       {/* Content Guide Sec.7 — both newsletter options, clearly visible */}
-      <div className="mt-16">
+      <div className="mt-16 mb-8">
         <InsightsNewsletters />
       </div>
 
 
-      {/* Category filters */}
+      {/* Blog section — KEC Insights vs The BioEnergy Brief */}
+      <div className="container-shell mb-5">
+        <div className="flex flex-wrap gap-2">
+          {SECTIONS.map((sec) => {
+            const on = activeSection === sec.key;
+            return (
+              <button
+                key={sec.key}
+                type="button"
+                onClick={() => setActiveSection(sec.key)}
+                className={`relative inline-flex min-h-[42px] cursor-pointer items-center rounded-full px-5 text-[13.5px] font-bold transition-all duration-300 ${on ? "text-white shadow-lift" : "border border-ink-900/12 bg-white text-ink-800 hover:border-leaf-500 hover:text-leaf-700"
+                  }`}
+                style={on ? { background: `linear-gradient(120deg, ${LEAF_DARK}, ${LEAF_LIGHT})` } : undefined}
+              >
+                {sec.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Topic filters */}
       <div className="container-shell mb-8">
         <div className="flex flex-wrap gap-2">
           {CATEGORIES.map((cat) => {

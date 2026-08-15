@@ -20,6 +20,7 @@ export const tagColors = {
 export const BLOGS = [
   {
     slug: "what-is-bio-cbg-beginners-guide",
+    category: "bioenergy-brief",
     tag: "CBG Basics",
     date: "March 3, 2026",
     readTime: "6 min read",
@@ -101,6 +102,7 @@ export const BLOGS = [
   },
   {
     slug: "cbg-policy-incentives-india-2026",
+    category: "kec-insights",
     tag: "Policy & Incentives",
     date: "February 14, 2026",
     readTime: "7 min read",
@@ -172,6 +174,7 @@ export const BLOGS = [
   },
   {
     slug: "feedstock-selection-guide-anaerobic-digestion",
+    category: "bioenergy-brief",
     tag: "Feedstock",
     date: "January 22, 2026",
     readTime: "5 min read",

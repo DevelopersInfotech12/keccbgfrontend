@@ -25,7 +25,7 @@ export default function TechnologyProcessScreen() {
         subtitle="Efficient, scalable and sustainable processes for next-generation Bio-CNG production."
         cta={{ label: "Explore Technology", href: "/contact" }}
       />
-      <div className="pt-[calc(96px+1.5rem)] sm:pt-[calc(104px+2rem)]" />
+      {/* <div className="pt-[calc(96px+1.5rem)] sm:pt-[calc(104px+2rem)]" /> */}
       <Industries />
       <CTASection />
       <Footer />

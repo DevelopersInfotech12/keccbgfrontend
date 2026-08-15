@@ -4,9 +4,19 @@ import Link from "next/link";
 import { Search, PenSquare, Trash2, Eye, EyeOff, Star, StarOff, RefreshCw, AlertCircle, BookOpen, ChevronLeft, ChevronRight } from "lucide-react";
 import { useAdminAuth } from "@/lib/useAdminAuth";
 import { adminApi } from "@/lib/adminApi";
-import { C, TAG_COLORS } from "@/lib/adminConstants";
+import { C, TAG_COLORS, BLOG_CATEGORIES, BLOG_CATEGORY_LABELS } from "@/lib/adminConstants";
 
 const STATUS_OPTS = ["all", "published", "draft"];
+const CATEGORY_OPTS = [{ key: "all", label: "All" }, ...BLOG_CATEGORIES];
+
+function CategoryBadge({ category }) {
+  const isKec = category === "kec-insights";
+  return (
+    <span style={{ fontSize: 11, fontWeight: 600, padding: "3px 9px", borderRadius: 999, background: isKec ? "#EAF6EF" : "#FEF3EF", color: isKec ? "#1A6A42" : "#7E3629" }}>
+      {BLOG_CATEGORY_LABELS[category] || category}
+    </span>
+  );
+}
 
 function TagBadge({ tag }) {
   const c = TAG_COLORS[tag] || { bg: "#F3F6F4", text: "#374151" };
@@ -21,6 +31,7 @@ export default function AdminBlogListScreen() {
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("all");
+  const [category, setCategory] = useState("all");
   const [selected, setSelected] = useState([]);
   const [bulkLoading, setBulkLoading] = useState(false);
   const [page, setPage] = useState(1);
@@ -31,13 +42,14 @@ export default function AdminBlogListScreen() {
       const params = { page, limit: 15 };
       if (search) params.search = search;
       if (status !== "all") params.status = status;
+      if (category !== "all") params.category = category;
       const res = await adminApi.getBlogs(params);
       setBlogs(res.data);
       setPagination(res.pagination);
       setSelected([]);
     } catch (e) { setError(e.message); }
     finally { setLoading(false); }
-  }, [page, search, status]);
+  }, [page, search, status, category]);
 
   useEffect(() => { if (!authLoading) fetchBlogs(); }, [authLoading, fetchBlogs]);
 
@@ -61,7 +73,7 @@ export default function AdminBlogListScreen() {
   return (
     <>
       <style>{`
-        .blog-row { display:grid; grid-template-columns:36px 1fr auto auto auto auto; align-items:center; gap:14px; padding:13px 18px; border-bottom:1px solid #F0F4F2; transition:background 0.15s; }
+        .blog-row { display:grid; grid-template-columns:36px 1fr auto auto auto auto auto; align-items:center; gap:14px; padding:13px 18px; border-bottom:1px solid #F0F4F2; transition:background 0.15s; }
         .blog-row:hover { background:#FAFBFA; }
         .act-btn { display:inline-flex; align-items:center; gap:5px; padding:6px 12px; border-radius:6px; font-size:12px; font-weight:500; cursor:pointer; font-family:${C.sans}; border:1.5px solid; transition:all 0.15s; background:none; white-space:nowrap; }
         .search-input { padding:9px 14px 9px 40px; border:1.5px solid ${C.border}; border-radius:8px; font-family:${C.sans}; font-size:13px; outline:none; width:240px; transition:border-color 0.18s; }
@@ -93,6 +105,13 @@ export default function AdminBlogListScreen() {
             </button>
           ))}
         </div>
+        <div style={{ display: "flex", gap: 6 }}>
+          {CATEGORY_OPTS.map((c) => (
+            <button key={c.key} className={`filter-btn${category === c.key ? " active" : ""}`} onClick={() => { setCategory(c.key); setPage(1); }}>
+              {c.label}
+            </button>
+          ))}
+        </div>
         <button onClick={fetchBlogs} style={{ marginLeft: "auto", background: "none", border: "none", cursor: "pointer", color: C.muted, padding: 6 }}>
           <RefreshCw size={16} />
         </button>
@@ -118,6 +137,7 @@ export default function AdminBlogListScreen() {
         <div className="blog-row" style={{ background: "#FAFBFA", borderBottom: "2px solid #E6ECE8" }}>
           <input type="checkbox" checked={selected.length === blogs.length && blogs.length > 0} onChange={toggleAll} style={{ cursor: "pointer" }} />
           <div style={{ fontSize: 12, fontWeight: 600, color: C.muted, textTransform: "uppercase", letterSpacing: "0.06em" }}>Title</div>
+          <div className="hide-mobile" style={{ fontSize: 12, fontWeight: 600, color: C.muted, textTransform: "uppercase", letterSpacing: "0.06em" }}>Section</div>
           <div className="hide-mobile" style={{ fontSize: 12, fontWeight: 600, color: C.muted, textTransform: "uppercase", letterSpacing: "0.06em" }}>Tag</div>
           <div className="hide-mobile" style={{ fontSize: 12, fontWeight: 600, color: C.muted, textTransform: "uppercase", letterSpacing: "0.06em" }}>Status</div>
           <div className="hide-mobile" style={{ fontSize: 12, fontWeight: 600, color: C.muted, textTransform: "uppercase", letterSpacing: "0.06em" }}>Views</div>
@@ -142,6 +162,7 @@ export default function AdminBlogListScreen() {
                   <div style={{ fontWeight: 600, fontSize: 13.5, color: C.text, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{blog.title}</div>
                   <div style={{ fontSize: 11.5, color: C.muted, marginTop: 3 }}>{blog.date} · {blog.readTime}</div>
                 </div>
+                <div className="hide-mobile"><CategoryBadge category={blog.category} /></div>
                 <div className="hide-mobile"><TagBadge tag={blog.tag} /></div>
                 <div className="hide-mobile">
                   <span style={{ fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 999, background: isPublished ? C.successBg : C.warnBg, color: isPublished ? "#065F46" : "#92400E" }}>{blog.status}</span>

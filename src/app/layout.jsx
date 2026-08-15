@@ -1,6 +1,7 @@
 import { Bricolage_Grotesque, Instrument_Serif, Inter } from "next/font/google";
 import "./globals.css";
 import WhatsAppWidget from "@/comp/WhatsAppWidget";
+import SocialDock from "@/comp/SocialDock";
 
 /* Display: an optically-sized grotesque with real character in the counters —
    carries the headlines without reading like a default UI sans. */
@@ -47,6 +48,7 @@ export default function RootLayout({ children }) {
     >
       <body className="font-body antialiased">{children}
         <WhatsAppWidget />
+        <SocialDock />
       </body>
     </html>
   );

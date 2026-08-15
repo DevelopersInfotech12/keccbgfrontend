@@ -26,6 +26,15 @@ export const C = {
   sans: "var(--font-inter), system-ui, sans-serif",
 };
 
+// ── Blog verticals ───────────────────────────────────────────
+// Which public blog section a post belongs to — separate from the
+// topic "Tag" below. Every blog must pick exactly one.
+export const BLOG_CATEGORIES = [
+  { key: "kec-insights", label: "KEC Insights" },
+  { key: "bioenergy-brief", label: "The BioEnergy Brief" },
+];
+export const BLOG_CATEGORY_LABELS = BLOG_CATEGORIES.reduce((m, c) => ({ ...m, [c.key]: c.label }), {});
+
 // ── Blog categories ─────────────────────────────────────────
 export const TAGS = ["CBG Basics", "Policy & Incentives", "Feedstock", "Plant Operations", "Sustainability", "Industry News"];
 
@@ -39,7 +48,7 @@ export const TAG_COLORS = {
 };
 
 export const EMPTY_BLOG = {
-  title: "", slug: "", excerpt: "", tag: "CBG Basics", date: "", readTime: "5 min read",
+  title: "", slug: "", excerpt: "", category: "bioenergy-brief", tag: "CBG Basics", date: "", readTime: "5 min read",
   author: "Bio CBG Team", featured: false, status: "draft",
   img: "", heroImg: "",
   heroGradient: "linear-gradient(135deg,rgba(10,19,16,0.94) 0%,rgba(26,106,66,0.80) 100%)",
