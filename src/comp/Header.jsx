@@ -77,7 +77,7 @@ export default function Header({ light = false }) {
               <Link
                 key={link.label}
                 href={link.href}
-                className="relative shrink-0 cursor-pointer whitespace-nowrap px-1.5 2xl:px-2 text-[14.5px] 2xl:text-[14px] font-semibold text-ink-500 transition-colors duration-300 after:absolute after:-bottom-1.5 after:left-0 after:h-[2px] after:w-0 after:rounded-full after:bg-blush-400 after:transition-all after:duration-300 hover:text-leaf-700 hover:after:w-full"
+                className="relative shrink-0 cursor-pointer whitespace-nowrap px-1.5 2xl:px-2 text-[14px] 2xl:text-[14px] font-semibold text-ink-500 transition-colors duration-300 after:absolute after:-bottom-1.5 after:left-0 after:h-[2px] after:w-0 after:rounded-full after:bg-blush-400 after:transition-all after:duration-300 hover:text-leaf-700 hover:after:w-full"
               >
                 {link.label}
               </Link>
@@ -88,7 +88,7 @@ export default function Header({ light = false }) {
             <button
               type="button"
               onClick={() => setCbOpen(true)}
-              className="inline-flex min-h-[40px] shrink-0 cursor-pointer items-center gap-1 rounded-full px-2.5 2xl:px-3 text-[13px] 2xl:text-[14px] font-semibold text-white shadow-lift-blush transition-all duration-300 hover:-translate-y-0.5"
+              className="inline-flex min-h-[40px] shrink-0 cursor-pointer items-center gap-1 rounded-full px-2.5 2xl:px-3 text-[13.2px] 2xl:text-[14px] font-semibold text-white shadow-lift-blush transition-all duration-300 hover:-translate-y-0.5"
               style={{ background: ORANGE }}
             >
               <Phone className="h-4 w-4" strokeWidth={2} aria-hidden="true" />

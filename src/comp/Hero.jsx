@@ -163,7 +163,7 @@ export default function Hero() {
                 Building India&apos;s Clean Energy Infrastructure
               </motion.p>
 
-              <motion.h1 variants={riseIn} className="mt-7 font-display font-semibold tracking-[-0.03em] text-white text-balance">
+              <motion.h1 variants={riseIn} className="mt-7 font-display font-semibold tracking-[-0.03em] text-white text-balance sm:ml-[1px] ml-[20px]">
                 <span className="block text-[2.15rem] leading-[1.06] sm:text-[2.75rem] lg:text-[3.2rem]">
                   CBG Park
                 </span>
@@ -175,14 +175,14 @@ export default function Hero() {
                 </span>
               </motion.h1>
 
-              <motion.div variants={riseIn} className="mt-5 flex items-center gap-2.5">
+              <motion.div variants={riseIn} className="mt-5 flex items-center gap-2.5 sm:ml-[1px] ml-[24px]">
                 <span aria-hidden="true" className="h-px w-6" style={{ backgroundColor: ORANGE }} />
                 <span className="text-[11px] font-semibold uppercase tracking-[0.28em] text-white/55">
                   KEC Agritech
                 </span>
               </motion.div>
 
-              <motion.p variants={riseIn} className="mt-4 max-w-xl text-pretty text-[15.5px] leading-[1.65] text-white/75 sm:text-[15px]">
+              <motion.p variants={riseIn} className="mt-4 max-w-xl text-pretty text-[15.5px] leading-[1.65] text-white/75 sm:text-[15px] ml-[24px] sm:ml-[1px]">
                 Every park is engineered as a complete ecosystem — feedstock
                 logistics, plant connectivity, and long-term infrastructure
                 built to scale across India.

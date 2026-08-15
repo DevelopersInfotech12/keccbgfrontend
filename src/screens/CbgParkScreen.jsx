@@ -16,7 +16,7 @@ export default function CbgParkScreen() {
       <Header light />
       <OtherHero
         bgImage="/images/kechero.png"
-        eyebrow="About Us"
+        eyebrow="CBG Park"
         title="Powering India's Bio-CNG Future"
         subtitle="18 plants across 6 states, one mission."
         cta={{ label: "Get in Touch", href: "/contact" }}

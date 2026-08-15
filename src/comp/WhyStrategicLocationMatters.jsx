@@ -210,7 +210,7 @@ function CorridorRoute() {
 export default function WhyStrategicLocationMatters() {
     return (
         <section
-            className="w-full py-16 px-6 sm:px-10 lg:px-16"
+            className="w-full pb-16 sm:mt-[-60px] px-6 sm:px-10 lg:px-16"
             style={{ background: BG, color: INK }}
         >
             <div className="mx-auto max-w-5xl">

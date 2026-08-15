@@ -107,7 +107,7 @@ export default function HomeMain() {
                         <div className="relative overflow-hidden rounded-[24px]" style={{ boxShadow: `0 30px 60px -30px ${EMERALD}59` }}>
                             {/* swap the <img> below for a <video autoPlay muted loop playsInline> if you'd rather use footage */}
                             <img
-                                src={IMG.industrialPlant}
+                                src="/images/homemain.png"
                                 alt="Bio-CNG upgrader at one of our CBG parks"
                                 className="h-64 w-full object-cover sm:h-80"
                             />

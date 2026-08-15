@@ -16,7 +16,7 @@ export default function StrategicLocationScreen() {
         bgImage="/images/kechero.png"
         eyebrow="Strategic Location"
         title="Strategically Located for a Stronger Bio-CNG Network"
-        subtitle="Building a connected and efficient CBG ecosystem across India."
+        // subtitle="Building a connected and efficient CBG ecosystem across India."
         cta={{ label: "Explore Locations", href: "/contact" }}
       />
       <div className="pt-[calc(96px+1.5rem)] sm:pt-[calc(104px+2rem)]" />
