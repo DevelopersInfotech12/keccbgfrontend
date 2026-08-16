@@ -170,14 +170,14 @@ export default function Hero() {
                 <span className="mt-1 block font-body text-[1.5rem] italic leading-[1.15] tracking-[-0.01em] sm:text-[1.9rem] lg:text-[2.9rem]" style={{ color: ORANGE }}>
                   Strategically Planned
                 </span>
-                <span className="mt-1 block text-[1.55rem] font-medium leading-[1.15] text-white/90 sm:text-[1.95rem] lg:text-[2.1rem]">
+                <span className="mt-1 block text-[1.55rem] font-medium leading-[1.15] text-white/90 sm:text-[1.95rem] lg:text-[2.3rem]">
                   Bio-CNG Industrial Ecosystems
                 </span>
               </motion.h1>
 
               <motion.div variants={riseIn} className="mt-5 flex items-center gap-2.5 sm:ml-[1px] ml-[24px]">
                 <span aria-hidden="true" className="h-px w-6" style={{ backgroundColor: ORANGE }} />
-                <span className="text-[11px] font-semibold uppercase tracking-[0.28em] text-white/55">
+                <span className="text-[12px] font-semibold uppercase tracking-[0.28em] text-white/55">
                   KEC Agritech
                 </span>
               </motion.div>

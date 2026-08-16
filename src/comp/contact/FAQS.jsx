@@ -95,9 +95,9 @@ function FaqCard({ item, open, onToggle }) {
                 type="button"
                 onClick={onToggle}
                 aria-expanded={open}
-                className="flex w-full cursor-pointer items-center gap-4 rounded-[22px] px-6 py-2 text-left sm:px-7"
+                className="flex w-full cursor-pointer items-center gap-4 rounded-[22px] px-4 py-2 text-left sm:px-7"
             >
-                <Icon className="h-5 w-5 shrink-0" style={{ color: accentColor }} strokeWidth={1.9} aria-hidden="true" />
+                <Icon className="sm:h-5 sm:w-5 w-4 h-4 shrink-0" style={{ color: accentColor }} strokeWidth={1.9} aria-hidden="true" />
                 <span className="flex-1 font-display text-[15.5px] justify-content font-semibold text-ink-900 sm:text-[16.5px]">
                     {q}
                 </span>
@@ -148,16 +148,16 @@ export default function Faq() {
                 className="container-shell relative mx-auto flex items-stretch"
                 style={{ maxWidth: "1100px" }}
             >
-                <div className="flex w-14 shrink-0 items-center justify-center rounded-l-[22px] sm:w-16" style={{ background: TEAL, boxShadow: `0 14px 28px -18px ${TEAL}99` }}>
+                <div className="flex w-10 shrink-0 items-center justify-center rounded-l-[22px] sm:w-16" style={{ background: TEAL, boxShadow: `0 14px 28px -18px ${TEAL}99` }}>
                     <span
-                        className="font-display text-lg font-extrabold uppercase tracking-[0.35em] text-white sm:text-xl"
+                        className="font-display text-[25px] font-extrabold uppercase tracking-[0.35em] text-white sm:text-xl"
                         style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}
                     >
                         FAQ
                     </span>
                 </div>
 
-                <div className="flex-1 rounded-r-[22px] bg-ink-0 px-6 py-8 shadow-panel sm:px-9 sm:py-10" style={{ border: `1px solid ${TEAL}14`, borderLeft: "none" }}>
+                <div className="flex-1 rounded-r-[22px] bg-ink-0 px-4 py-8 shadow-panel sm:px-9 sm:py-10" style={{ border: `1px solid ${TEAL}14`, borderLeft: "none" }}>
                     <RevealSide from="left">
                         <SectionHeading
                             eyebrow="FAQs"
