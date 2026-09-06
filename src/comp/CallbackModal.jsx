@@ -358,7 +358,7 @@ export default function CallbackModal({ open, onClose }) {
           <style>{`
   @keyframes cbPulse{0%,100%{opacity:.25;transform:scale(1)}50%{opacity:.6;transform:scale(1.4)}}
   .cbModalCard { flex-direction: column; }
-  .cbModalImagePane { display: block; width: 100%; height: 230px; }
+  .cbModalImagePane { display: block; width: 100%; height: 300px; }
   .cbModalOverlay { padding: 28px 16px; align-items: flex-start; }
   .cbCloseBtnWrap { position: absolute; top: 14px; right: 14px; z-index: 5; }
   .cbFormPane { padding: 22px 16px; }
