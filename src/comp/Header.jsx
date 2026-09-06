@@ -112,7 +112,7 @@ export default function Header({ light = false }) {
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
-            className={`grid h-11 w-11 shrink-0 cursor-pointer place-items-center rounded-full transition-colors xl:hidden ${onDark ? "bg-white/15 text-white" : "bg-ink-900/6 text-ink-900"
+            className={`grid h-11 w-11 shrink-0 cursor-pointer place-items-center rounded-full transition-colors xl:hidden ${onDark ? "bg-ink-900/6 text-ink-900" : "bg-ink-900/6 text-ink-900"
               }`}
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
