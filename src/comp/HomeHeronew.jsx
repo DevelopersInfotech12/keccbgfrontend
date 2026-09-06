@@ -6,7 +6,11 @@ import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion
 import SocialDock from "@/comp/SocialDock";
 import CallbackModal from "@/comp/CallbackModal";
 
-const HERO_IMAGE = "/images/homehero/sonubanner.png";
+const HERO_IMAGE_DESKTOP = "/images/homehero/sonubanner.png";
+const HERO_IMAGE_MOBILE = "/images/homehero/sonubannermobile.png";
+// const HERO_IMAGE_MOBILE = "/aboutscreen1.png";
+
+
 
 export default function HomeHeronew() {
   const sectionRef = useRef(null);
@@ -30,20 +34,24 @@ export default function HomeHeronew() {
         style={reduced ? undefined : { scale: panelScale }}
         className="relative isolate min-h-[80svh] w-full overflow-hidden rounded-[28px] shadow-panel sm:min-h-[95svh] sm:rounded-[40px]"
       >
+        {/* Mobile bg — swap path once real mobile crop ready */}
         <div
           aria-hidden="true"
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${HERO_IMAGE})` }}
+          className="absolute inset-0 block bg-cover bg-center sm:hidden"
+          style={{ backgroundImage: `url(${HERO_IMAGE_MOBILE})` }}
+        />
+        {/* Desktop bg */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 hidden bg-cover bg-center sm:block"
+          style={{ backgroundImage: `url(${HERO_IMAGE_DESKTOP})` }}
         />
 
-        {/* Content boxed to empty-lot area in banner. Mobile uses wider/symmetric insets
-            since portrait crop shifts the empty-lot region vs desktop landscape crop.
-            Tune % per breakpoint if crop shifts again. */}
         <motion.div
           initial={reduced ? undefined : { opacity: 0, y: 16 }}
           animate={reduced ? undefined : { opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="absolute inset-x-[4%] bottom-[10%] left-[10%] right-[10%] flex items-center justify-center rounded-xl p-3 sm:left-[24%] sm:right-[26%] sm:top-[58%] sm:bottom-[4%] sm:rounded-2xl sm:p-6"
+          className="absolute inset-x-[10%] bottom-[14%] flex items-center justify-center rounded-xl p-3 sm:left-[24%] sm:right-[26%] sm:top-[58%] sm:bottom-[4%] sm:rounded-2xl sm:p-6"
         >
           <div
             aria-hidden="true"
@@ -51,11 +59,11 @@ export default function HomeHeronew() {
           />
 
           <div className="relative z-10 w-full text-center">
-            <h1 className="text-[18px] font-semibold leading-snug text-teal-100 drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)] sm:text-lg md:text-2xl lg:text-3xl">
-              CBG Park | Strategically Planned Bio-CNG Industrial Ecosystems by{" "}
-              <span className="text-amber-300">KEC Agritech</span>
+            <h1 className="text-[18px] pt-4 sm:pt-1 font-semibold leading-snug text-teal-100 drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)] sm:text-lg md:text-2xl lg:text-3xl">
+              CBG Park | Strategically Planned Bio-CNG Industrial Ecosystems {" "}
+              <span className="text-amber-300">byKEC Agritech</span>
             </h1>
-            <p className="mt-2 text-[13px] px-2 text-justify leading-snug text-teal-100/80 drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)] sm:mt-3 sm:text-xs md:text-sm lg:text-[14px]">
+            <p className="mt-2 px-2 text-[13px] mb-2 text-justify leading-snug text-teal-100/80 drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)] sm:mt-3 sm:text-xs md:text-sm lg:text-[14px]">
               Explore KEC&rsquo;s strategically planned CBG Parks designed around infrastructure, connectivity, feedstock integration, and long-term clean energy ecosystem development.
             </p>
           </div>

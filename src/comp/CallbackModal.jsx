@@ -111,9 +111,10 @@ export default function CallbackModal({ open, onClose }) {
         <motion.div
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
           onClick={onClose}
+          className="cbModalOverlay"
           style={{
-            position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center',
-            padding: 16, background: 'rgba(10,19,16,0.55)', backdropFilter: 'blur(8px)', overflowY: 'auto',
+            position: 'fixed', inset: 0, zIndex: 100, display: 'flex', justifyContent: 'center',
+            background: 'rgba(10,19,16,0.55)', backdropFilter: 'blur(8px)', overflowY: 'auto',
           }}
           role="dialog" aria-modal="true" aria-label="Request a callback"
         >
@@ -203,8 +204,8 @@ export default function CallbackModal({ open, onClose }) {
               </div>
 
               {/* ===== RIGHT: form ===== */}
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '22px 40px' }}>
-                <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+              <div className="cbFormPane" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                <div className="cbCloseBtnWrap" style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
                   <button onClick={onClose} aria-label="Close"
                     onMouseEnter={(e) => { e.currentTarget.style.background = '#EDEFEC'; e.currentTarget.style.transform = 'rotate(90deg)'; }}
                     onMouseLeave={(e) => { e.currentTarget.style.background = '#F3F6F4'; e.currentTarget.style.transform = 'rotate(0deg)'; }}
@@ -241,8 +242,8 @@ export default function CallbackModal({ open, onClose }) {
                         style={{ fontFamily: F, fontSize: 28, fontWeight: 800, margin: '0 0 6px', letterSpacing: '-0.01em', color: "#046f8d", textAlign: 'center' }}>
                         Hi there 👋
                       </motion.h2>
-                      <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
-                        style={{ fontFamily: F, fontSize: 13.5, color: INK500, margin: '0 0 24px', textAlign: 'center' }}>
+                      <motion.p className="cbSubtitle" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
+                        style={{ fontFamily: F, color: INK500, margin: '0 0 24px', textAlign: 'center' }}>
                         Share a few details, our team calls you back
                       </motion.p>
 
@@ -337,12 +338,12 @@ export default function CallbackModal({ open, onClose }) {
                         </p>
 
                         {/* bottom trust row, echoes original social-icon row */}
-                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
-                          style={{ display: 'flex', justifyContent: 'center', gap: 22, paddingTop: 14, borderTop: `1px solid ${BORDER_SOFT}` }}>
+                        <motion.div className="cbTrustRow" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
+                          style={{ display: 'flex', justifyContent: 'center', paddingTop: 14, borderTop: `1px solid ${BORDER_SOFT}` }}>
                           {[[ShieldCheck, 'No spam'], [Zap, 'Quick reply'], [Clock, 'Callback in 24h']].map(([Icon, label]) => (
-                            <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 6, color: INK300 }}>
+                            <div key={label} className="cbTrustItem" style={{ display: 'flex', alignItems: 'center', gap: 6, color: INK300 }}>
                               <Icon size={13} />
-                              <span style={{ fontFamily: F, fontSize: 10.5, fontWeight: 500 }}>{label}</span>
+                              <span style={{ fontFamily: F, fontWeight: 500 }}>{label}</span>
                             </div>
                           ))}
                         </motion.div>
@@ -357,10 +358,22 @@ export default function CallbackModal({ open, onClose }) {
           <style>{`
   @keyframes cbPulse{0%,100%{opacity:.25;transform:scale(1)}50%{opacity:.6;transform:scale(1.4)}}
   .cbModalCard { flex-direction: column; }
-  .cbModalImagePane { display: block; width: 100%; height: 200px; }
+  .cbModalImagePane { display: block; width: 100%; height: 230px; }
+  .cbModalOverlay { padding: 28px 16px; align-items: flex-start; }
+  .cbCloseBtnWrap { position: absolute; top: 14px; right: 14px; z-index: 5; }
+  .cbFormPane { padding: 22px 16px; }
+  .cbSubtitle { white-space: nowrap; font-size: 11px !important; }
+  .cbTrustRow { gap: 10px !important; }
+  .cbTrustItem span { white-space: nowrap; font-size: 9px !important; }
   @media (min-width: 760px) {
     .cbModalCard { flex-direction: row; }
     .cbModalImagePane { width: 48%; min-width: 260px; height: auto; }
+    .cbModalOverlay { padding: 16px; align-items: center; }
+    .cbCloseBtnWrap { position: static; top: auto; right: auto; z-index: auto; }
+    .cbFormPane { padding: 22px 40px; }
+    .cbSubtitle { white-space: normal; font-size: 13.5px !important; }
+    .cbTrustRow { gap: 22px !important; }
+    .cbTrustItem span { white-space: normal; font-size: 10.5px !important; }
   }
 `}</style>
         </motion.div>
