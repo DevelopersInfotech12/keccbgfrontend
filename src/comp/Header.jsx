@@ -54,7 +54,7 @@ export default function Header({ light = false }) {
       >
         <div
           className={`mx-4 sm:mx-8 flex h-[66px] items-center justify-between gap-2 xl:gap-6 rounded-full pl-2 pr-2 transition-all duration-500 ${onDark
-            ? "border border-white/25 bg-gradient-to-b from-black/15 via-emerald-950/15 to-black/20 backdrop-blur-[3px]"
+            ? "border border-white/25 bg-white"
             : "border border-ink-900/8 bg-white shadow-[0_18px_40px_-18px_rgba(10,19,16,0.28)]"
             }`}
         >
@@ -80,7 +80,7 @@ export default function Header({ light = false }) {
                 key={link.label}
                 href={link.href}
                 className={`relative shrink-0 cursor-pointer whitespace-nowrap px-1.5 2xl:px-2 text-[14px] 2xl:text-[14px] font-semibold transition-colors duration-300 after:absolute after:-bottom-1.5 after:left-0 after:h-[2px] after:w-0 after:rounded-full after:bg-blush-400 after:transition-all after:duration-300 hover:after:w-full ${onDark
-                  ? "text-white/90 hover:text-white"
+                  ? "text-ink-500 hover:text-leaf-700"
                   : "text-ink-500 hover:text-leaf-700"
                   }`}
               >

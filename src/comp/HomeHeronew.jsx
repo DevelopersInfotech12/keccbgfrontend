@@ -28,7 +28,7 @@ export default function HomeHeronew() {
     >
       <motion.div
         style={reduced ? undefined : { scale: panelScale }}
-        className="relative isolate min-h-[640px] w-full overflow-hidden rounded-[28px] shadow-panel sm:min-h-[95svh] sm:rounded-[40px]"
+        className="relative isolate min-h-[80svh] w-full overflow-hidden rounded-[28px] shadow-panel sm:min-h-[95svh] sm:rounded-[40px]"
       >
         <div
           aria-hidden="true"
@@ -36,25 +36,26 @@ export default function HomeHeronew() {
           style={{ backgroundImage: `url(${HERO_IMAGE})` }}
         />
 
-        {/* Content boxed to the empty lot area in banner only — tune % if crop shifts it */}
+        {/* Content boxed to empty-lot area in banner. Mobile uses wider/symmetric insets
+            since portrait crop shifts the empty-lot region vs desktop landscape crop.
+            Tune % per breakpoint if crop shifts again. */}
         <motion.div
           initial={reduced ? undefined : { opacity: 0, y: 16 }}
           animate={reduced ? undefined : { opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="absolute left-[24%] right-[26%] top-[58%] bottom-[4%] flex items-center justify-center overflow-hidden rounded-xl p-3 sm:rounded-2xl sm:p-6"
+          className="absolute inset-x-[4%] bottom-[10%] left-[10%] right-[10%] flex items-center justify-center rounded-xl p-3 sm:left-[24%] sm:right-[26%] sm:top-[58%] sm:bottom-[4%] sm:rounded-2xl sm:p-6"
         >
-          {/* Single scrim: black → emerald-950 → black, amber rim-light top edge */}
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 rounded-xl border-t border-amber-400/30 bg-gradient-to-b from-black/85 via-emerald-950/65 to-black/90 backdrop-blur-[3px] sm:rounded-2xl"
           />
 
-          <div className="relative z-10 text-center">
-            <h1 className="text-[11px] font-semibold leading-tight text-teal-100 drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)] xs:text-xs sm:text-lg md:text-2xl lg:text-3xl">
+          <div className="relative z-10 w-full text-center">
+            <h1 className="text-[18px] font-semibold leading-snug text-teal-100 drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)] sm:text-lg md:text-2xl lg:text-3xl">
               CBG Park | Strategically Planned Bio-CNG Industrial Ecosystems by{" "}
               <span className="text-amber-300">KEC Agritech</span>
             </h1>
-            <p className="mt-1.5 text-[9px] leading-snug text-teal-100/70 drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)] sm:mt-3 sm:text-xs md:text-sm lg:text-[14px]">
+            <p className="mt-2 text-[13px] px-2 text-justify leading-snug text-teal-100/80 drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)] sm:mt-3 sm:text-xs md:text-sm lg:text-[14px]">
               Explore KEC&rsquo;s strategically planned CBG Parks designed around infrastructure, connectivity, feedstock integration, and long-term clean energy ecosystem development.
             </p>
           </div>
