@@ -61,7 +61,7 @@ export default function HomeHeronew() {
           <div className="relative z-10 w-full text-center">
             <h1 className="text-[18px] pt-4 sm:pt-1 font-semibold leading-snug text-teal-100 drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)] sm:text-lg md:text-2xl lg:text-3xl">
               CBG Park | Strategically Planned Bio-CNG Industrial Ecosystems {" "}
-              <span className="text-amber-300">byKEC Agritech</span>
+              <span className="text-amber-300">by KEC Agritech</span>
             </h1>
             <p className="mt-2 px-2 text-[13px] mb-2 text-justify leading-snug text-teal-100/80 drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)] sm:mt-3 sm:text-xs md:text-sm lg:text-[14px]">
               Explore KEC&rsquo;s strategically planned CBG Parks designed around infrastructure, connectivity, feedstock integration, and long-term clean energy ecosystem development.
