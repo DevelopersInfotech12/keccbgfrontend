@@ -1,15 +1,16 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Calendar, Eye, Share2, X } from "lucide-react";
 
 import SectionHeading from "@/comp/ui/SectionHeading";
 import TiltCard from "@/comp/ui/TiltCard";
 import { Reveal, Stagger, StaggerItem } from "@/comp/motion/Reveal";
-import { INFOGRAPHICS, INFOGRAPHIC_CATEGORIES } from "@/lib/infographicsData";
+import { INFOGRAPHICS as FALLBACK_INFOGRAPHICS, INFOGRAPHIC_CATEGORIES as FALLBACK_CATEGORIES } from "@/lib/infographicsData";
 
 const TEAL = "#02303D";
 const ORANGE = "#FF7D44";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
 /**
  * Content Guide Sec.8 — "Infographics" page. Required: a place to publish
@@ -144,11 +145,29 @@ function Lightbox({ item, onClose }) {
 export default function Infographics() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [viewing, setViewing] = useState(null);
+  const [items, setItems] = useState(FALLBACK_INFOGRAPHICS);
 
-  const categories = useMemo(() => ["All", ...INFOGRAPHIC_CATEGORIES], []);
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`${API_BASE}/infographics/published`)
+      .then((res) => res.json())
+      .then((json) => {
+        if (!cancelled && json?.success && json.data?.length) setItems(json.data);
+      })
+      .catch(() => {
+        /* keep FALLBACK_INFOGRAPHICS on any network/API error */
+      });
+    return () => { cancelled = true; };
+  }, []);
+
+  const categories = useMemo(() => {
+    const fromData = Array.from(new Set(items.map((i) => i.category))).filter(Boolean);
+    return ["All", ...(fromData.length ? fromData : FALLBACK_CATEGORIES)];
+  }, [items]);
+
   const filtered = useMemo(
-    () => (activeCategory === "All" ? INFOGRAPHICS : INFOGRAPHICS.filter((i) => i.category === activeCategory)),
-    [activeCategory]
+    () => (activeCategory === "All" ? items : items.filter((i) => i.category === activeCategory)),
+    [activeCategory, items]
   );
 
   return (

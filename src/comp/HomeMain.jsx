@@ -1,10 +1,13 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowUpRight, CalendarCheck2, Factory, Recycle, MapPin } from "lucide-react";
 
 import { Reveal } from "@/comp/motion/Reveal";
 import { IMG } from "@/lib/images";
+
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
 /* ── Palette — exact brand spec ──────────────────────────────── */
 const EMERALD = "#02303D";
@@ -21,8 +24,11 @@ const BADGES = [
     { icon: Recycle, value: "1.1M t", label: "CO₂e avoided" },
 ];
 
-/* ── City network data — richer than before ─────────────────── */
-const CITY_PARKS = [
+/* ── City network data — fallback shown until/if the admin-managed
+   list loads (or if the API is unreachable), so the strip never ships
+   empty. Edit the live list from Admin → City Network Parks instead
+   of editing this array. ─────────────────────────────────────── */
+const FALLBACK_CITY_PARKS = [
     { city: "Sangrur", state: "Punjab", stat: "3 Plants" },
     { city: "Karnal", state: "Haryana", stat: "2 Plants" },
     { city: "Meerut", state: "Uttar Pradesh", stat: "4 Plants" },
@@ -33,6 +39,20 @@ const CITY_PARKS = [
 
 export default function HomeMain() {
     const reduced = useReducedMotion();
+    const [cityParks, setCityParks] = useState(FALLBACK_CITY_PARKS);
+
+    useEffect(() => {
+        let cancelled = false;
+        fetch(`${API_BASE}/city-parks/published`)
+            .then((res) => res.json())
+            .then((json) => {
+                if (!cancelled && json?.success && json.data?.length) setCityParks(json.data);
+            })
+            .catch(() => {
+                /* keep FALLBACK_CITY_PARKS on any network/API error */
+            });
+        return () => { cancelled = true; };
+    }, []);
 
     return (
         <section className="relative overflow-hidden" style={{ background: BG }}>
@@ -235,9 +255,9 @@ export default function HomeMain() {
                 >
                     {[0, 1].map((rep) => (
                         <div key={rep} className="flex items-center gap-4 pr-4" aria-hidden={rep === 1}>
-                            {CITY_PARKS.map(({ city, state, stat }) => (
+                            {cityParks.map(({ _id, city, state, stat }) => (
                                 <div
-                                    key={`${rep}-${city}`}
+                                    key={`${rep}-${_id || city}`}
                                     className="flex min-w-[220px] items-center gap-3 rounded-2xl px-4 py-3"
                                     style={{ background: "#fff", boxShadow: `0 10px 30px -18px ${EMERALD}40` }}
                                 >

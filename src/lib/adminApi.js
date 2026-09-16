@@ -95,6 +95,21 @@ export const adminApi = {
   deleteCaseStudy: (id) => resourceApi("case-studies").remove(id),
   bulkCaseStudies: (action, ids) => resourceApi("case-studies").bulk(action, ids),
 
+  // Infographics
+  getInfographics: (params) => resourceApi("infographics").getAll(params),
+  getInfographic: (id) => resourceApi("infographics").getOne(id),
+  createInfographic: (data) => resourceApi("infographics").create(data),
+  updateInfographic: (id, data) => resourceApi("infographics").update(id, data),
+  toggleInfographicStatus: (id) => resourceApi("infographics").toggleStatus(id),
+  deleteInfographic: (id) => resourceApi("infographics").remove(id),
+
+  // City network parks (Home hero card strip)
+  getCityParks: () => request("/city-parks"),
+  getCityPark: (id) => request(`/city-parks/${id}`),
+  createCityPark: (data) => request("/city-parks", { method: "POST", body: JSON.stringify(data) }),
+  updateCityPark: (id, data) => request(`/city-parks/${id}`, { method: "PUT", body: JSON.stringify(data) }),
+  deleteCityPark: (id) => request(`/city-parks/${id}`, { method: "DELETE" }),
+
   // Upload
   uploadImage,
 };

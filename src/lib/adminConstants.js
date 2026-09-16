@@ -59,6 +59,22 @@ export const EMPTY_BLOG = {
   seo: { metaTitle: "", metaDescription: "", metaKeywords: [], ogTitle: "", ogDescription: "", ogImage: "", canonicalUrl: "", noIndex: false, structuredData: "" },
 };
 
+// ── Infographics ─────────────────────────────────────────────
+export const INFOGRAPHIC_CATEGORIES = [
+  "CBG Basics",
+  "Feedstock",
+  "Policy & Incentives",
+  "Plant Operations",
+  "Sustainability",
+];
+
+export const EMPTY_INFOGRAPHIC = {
+  title: "", slug: "", category: "CBG Basics", date: "", img: "", status: "draft", order: 0,
+};
+
+// ── City network parks (Home hero card strip) ────────────────
+export const EMPTY_CITY_PARK = { city: "", state: "", stat: "", order: 0 };
+
 // ── Case study sectors ──────────────────────────────────────
 export const SECTORS = ["Life Sciences", "Agriculture", "Municipal Waste", "Dairy & Food Processing", "Manufacturing"];
 
