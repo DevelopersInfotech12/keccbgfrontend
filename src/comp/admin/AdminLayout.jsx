@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, FileText, PenSquare, LogOut,
-  Menu, X, ChevronRight, Leaf, Camera, Image as ImageIcon, MapPin,
+  Menu, X, ChevronRight, Leaf, Camera, Image as ImageIcon, MapPin, Images,
 } from "lucide-react";
 import { C } from "@/lib/adminConstants";
 
@@ -17,6 +17,7 @@ const navItems = [
   { href: "/admin/infographics", icon: ImageIcon, label: "All Infographics" },
   { href: "/admin/infographics/create", icon: PenSquare, label: "Create Infographic" },
   { href: "/admin/city-parks", icon: MapPin, label: "City Network Parks" },
+  { href: "/admin/gallery", icon: Images, label: "Gallery Images" },
 ];
 
 export default function AdminLayout({ children, admin, onLogout }) {

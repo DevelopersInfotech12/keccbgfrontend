@@ -75,6 +75,9 @@ export const EMPTY_INFOGRAPHIC = {
 // ── City network parks (Home hero card strip) ────────────────
 export const EMPTY_CITY_PARK = { city: "", state: "", stat: "", order: 0 };
 
+// ── Gallery images (Home "KEC Gallery" scrolling grid) ───────
+export const EMPTY_GALLERY_IMAGE = { img: "", alt: "", column: "", order: 0 };
+
 // ── Case study sectors ──────────────────────────────────────
 export const SECTORS = ["Life Sciences", "Agriculture", "Municipal Waste", "Dairy & Food Processing", "Manufacturing"];
 

@@ -163,8 +163,9 @@ export default function Faq() {
                             eyebrow="FAQs"
                             accent="leaf"
                             title="Answers before"
-                            titleAccent=" you ask."
-                            className="max-w-sm"
+                            titleAccent="you ask."
+                            stack={false}
+                            className="max-w-lg"
                         />
                     </RevealSide>
 

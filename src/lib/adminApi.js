@@ -110,6 +110,13 @@ export const adminApi = {
   updateCityPark: (id, data) => request(`/city-parks/${id}`, { method: "PUT", body: JSON.stringify(data) }),
   deleteCityPark: (id) => request(`/city-parks/${id}`, { method: "DELETE" }),
 
+  // Gallery images (Home "KEC Gallery" scrolling grid)
+  getGalleryImages: () => request("/gallery"),
+  getGalleryImage: (id) => request(`/gallery/${id}`),
+  createGalleryImage: (data) => request("/gallery", { method: "POST", body: JSON.stringify(data) }),
+  updateGalleryImage: (id, data) => request(`/gallery/${id}`, { method: "PUT", body: JSON.stringify(data) }),
+  deleteGalleryImage: (id) => request(`/gallery/${id}`, { method: "DELETE" }),
+
   // Upload
   uploadImage,
 };

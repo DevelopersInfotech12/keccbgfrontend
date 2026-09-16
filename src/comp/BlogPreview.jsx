@@ -51,6 +51,7 @@ export default function BlogPreview() {
             accent="leaf"
             title="The BioEnergy"
             titleAccent="Brief."
+            stack={false}
             className="max-w-lg"
           />
 

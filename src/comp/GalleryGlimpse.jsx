@@ -1,9 +1,14 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Reveal } from "./motion/Reveal";
 import SectionHeading from "@/comp/ui/SectionHeading";
 
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+
+/* ── Fallback gallery — shown until/if the admin-managed list loads
+   (or if the API is unreachable), so the grid never ships empty. Edit
+   the live list from Admin → Gallery Images instead of this array. ── */
 const col1Images = [
     { src: "https://images.unsplash.com/photo-1509391366360-2e959784a276?w=600&q=80", alt: "Wind turbines renewable energy" },
     { src: "https://images.unsplash.com/photo-1637345158353-40607a208d46?w=600&q=80", alt: "Industrial gas pipes" },
@@ -48,24 +53,18 @@ const col4Images = [
     { src: "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=600&q=80", alt: "Wind turbines field" },
 ];
 
+const FALLBACK_COLUMNS = [col1Images, col2Images, col3Images, col4Images];
+
 const TEAL = "#02303D";
 const ORANGE = "#FF7D44";
 
-const track1 = [...col1Images, ...col1Images];
-const track2 = [...col2Images, ...col2Images];
-const track3 = [...col3Images, ...col3Images];
-const track4 = [...col4Images, ...col4Images];
-
 const IMG_HEIGHT = 280;
 const GAP = 12;
-const TOTAL1 = col1Images.length * (IMG_HEIGHT + GAP);
-const TOTAL2 = col2Images.length * (IMG_HEIGHT + GAP);
-const TOTAL3 = col3Images.length * (IMG_HEIGHT + GAP);
-const TOTAL4 = col4Images.length * (IMG_HEIGHT + GAP);
 
 /** Drives a track's translateY every frame — direction: 1 = up, -1 = down. */
 function useAutoScroll(ref, totalHeight, direction, speed = 30) {
     useEffect(() => {
+        if (!totalHeight) return;
         let pos = direction === -1 ? -totalHeight : 0;
         let frame;
         let last = performance.now();
@@ -84,6 +83,41 @@ function useAutoScroll(ref, totalHeight, direction, speed = 30) {
 }
 
 export default function GalleryGlimpse() {
+    const [columns, setColumns] = useState(FALLBACK_COLUMNS);
+
+    useEffect(() => {
+        let cancelled = false;
+        fetch(`${API_BASE}/gallery/published`)
+            .then((res) => res.json())
+            .then((json) => {
+                if (cancelled || !json?.success || !json.data?.length) return;
+                // Images with an explicit column (1-4) go there; the rest are
+                // round-robin distributed across the 4 columns by order.
+                const cols = [[], [], [], []];
+                let autoIndex = 0;
+                json.data.forEach((item) => {
+                    const col = Number(item.column);
+                    const idx = col >= 1 && col <= 4 ? col - 1 : autoIndex++ % 4;
+                    cols[idx].push({ src: item.img, alt: item.alt });
+                });
+                setColumns(cols);
+            })
+            .catch(() => {
+                /* keep FALLBACK_COLUMNS on any network/API error */
+            });
+        return () => { cancelled = true; };
+    }, []);
+
+    const [col1, col2, col3, col4] = columns;
+    const track1 = [...col1, ...col1];
+    const track2 = [...col2, ...col2];
+    const track3 = [...col3, ...col3];
+    const track4 = [...col4, ...col4];
+    const TOTAL1 = col1.length * (IMG_HEIGHT + GAP);
+    const TOTAL2 = col2.length * (IMG_HEIGHT + GAP);
+    const TOTAL3 = col3.length * (IMG_HEIGHT + GAP);
+    const TOTAL4 = col4.length * (IMG_HEIGHT + GAP);
+
     const ref1 = useRef(null);
     const ref2 = useRef(null);
     const ref3 = useRef(null);

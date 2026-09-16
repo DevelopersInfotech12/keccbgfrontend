@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { IMG } from "@/lib/images";
 import SectionHeading from "@/comp/ui/SectionHeading";
 import { Reveal } from "@/comp/motion/Reveal";
+import WhyCBGPark from "@/comp/WhyCBGPark";
 
 const EMERALD = "#02303D";
 const CORAL = "#FF7D44";
@@ -233,6 +234,8 @@ export default function WhatIsCBGPark() {
                     </p>
                 </motion.div>
             </section>
+
+            <WhyCBGPark />
 
             {/* ================= ECOSYSTEM PIPELINE ================= */}
             <section className="px-6 py-24 sm:px-10 lg:px-20">
