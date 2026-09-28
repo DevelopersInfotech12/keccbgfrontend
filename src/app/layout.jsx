@@ -33,7 +33,11 @@ export const metadata = {
   title: "CBG Park | Strategically Planned Bio-CNG Industrial Ecosystems by KEC Agritech",
   description:
     "Explore KEC's strategically planned CBG Parks designed around infrastructure, connectivity, feedstock integration, and long-term clean energy ecosystem development.",
+     icons: {
+    icon: "/images/logo.png"
+  },
 };
+
 
 export const viewport = {
   width: "device-width",
