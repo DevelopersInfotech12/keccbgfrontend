@@ -52,7 +52,7 @@ export default function AdminLayout({ children, admin, onLogout }) {
         className={`admin-sidebar${open ? " open" : ""}`}
         style={{ width: 256, background: C.sidebar, display: "flex", flexDirection: "column", position: "fixed", top: 0, left: 0, bottom: 0, zIndex: 50, padding: "0 12px", boxShadow: "4px 0 20px rgba(0,0,0,0.15)" }}
       >
-        <div style={{ padding: "20px 8px 16px", borderBottom: "1px solid rgba(255,255,255,0.08)", marginBottom: 12 }}>
+        <div style={{ padding: "20px 8px 4px", borderBottom: "1px solid rgba(255,255,255,0.08)", marginBottom: 1 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <img src="/images/logo.png" alt="Bio CBG" style={{ height: 30, width: "auto", flexShrink: 0 }} />
             <div>
@@ -62,7 +62,7 @@ export default function AdminLayout({ children, admin, onLogout }) {
           </div>
         </div>
 
-        <nav style={{ flex: 1, display: "flex", flexDirection: "column", gap: 3, paddingTop: 4 }}>
+        <nav style={{ flex: 1, display: "flex", flexDirection: "column", gap: 3, paddingTop: 1 }}>
           <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", padding: "8px 16px 6px", marginTop: 4 }}>
             Navigation
           </div>
@@ -79,7 +79,7 @@ export default function AdminLayout({ children, admin, onLogout }) {
           })}
         </nav>
 
-        <div style={{ borderTop: "1px solid rgba(255,255,255,0.08)", padding: "14px 8px 16px" }}>
+        <div style={{ borderTop: "1px solid rgba(255,255,255,0.08)", padding: "4px 8px 16px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 8px 12px" }}>
             <div style={{ width: 34, height: 34, borderRadius: "50%", background: `linear-gradient(135deg, ${C.accent}, ${C.coral})`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: C.display, fontWeight: 700, fontSize: 13, color: "#fff", flexShrink: 0 }}>
               {admin?.name?.charAt(0).toUpperCase() || "A"}
