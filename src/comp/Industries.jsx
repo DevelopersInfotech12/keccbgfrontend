@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useReducedMotion, motion } from "framer-motion";
 import {
   Sprout,
@@ -21,6 +22,8 @@ import {
 import SectionHeading from "@/comp/ui/SectionHeading";
 import TiltCard from "@/comp/ui/TiltCard";
 import { Reveal } from "@/comp/motion/Reveal";
+import TechnologyModal from "@/comp/TechnologyModal";
+import { TECH_STACK } from "@/lib/technologyStackData";
 
 /* ── Teal + orange, matches WhyUs / Products ── */
 const TEAL = "#02303D";
@@ -117,6 +120,8 @@ const INDUSTRIES = [
 
 export default function Industries() {
   const reduced = useReducedMotion();
+  const [active, setActive] = useState(null); // selected technology card
+  const openByTitle = (t) => setActive(INDUSTRIES.find((x) => x.title === t) || null);
 
   return (
     <section
@@ -166,11 +171,19 @@ export default function Industries() {
           {INDUSTRIES.map(({ icon: Icon, title, body }, i) => (
             <TiltCard
               key={title}
+              role="button"
+              tabIndex={0}
+              aria-haspopup="dialog"
+              aria-label={`Open ${title} details`}
+              onClick={() => setActive(INDUSTRIES[i])}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setActive(INDUSTRIES[i]); }
+              }}
               max={8}
               lift={6}
               glare={true}
               wrapperClassName="group h-full"
-              className="relative h-full overflow-hidden rounded-2xl p-7"
+              className="relative h-full cursor-pointer overflow-hidden rounded-2xl p-7"
               style={{
                 background: TEAL,
                 border: "1px solid rgba(255,255,255,0.10)",
@@ -229,6 +242,13 @@ export default function Industries() {
               >
                 {body}
               </p>
+              <span
+                className="relative mt-4 inline-flex items-center gap-1.5 text-[12px] font-semibold uppercase tracking-[0.14em]"
+                style={{ color: ORANGE }}
+              >
+                Learn more
+                <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
+              </span>
             </TiltCard>
           ))}
         </div>
@@ -247,6 +267,15 @@ export default function Industries() {
           </p>
         </div>
       </div>
+
+      {active && (
+        <TechnologyModal
+          tech={active}
+          data={TECH_STACK[active.title]}
+          onClose={() => setActive(null)}
+          onSelect={openByTitle}
+        />
+      )}
     </section>
   );
 }
