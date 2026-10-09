@@ -3,7 +3,7 @@
 import { useEffect, useCallback, useState, useRef } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { STACK_LAYERS, DEPLOY_PHASES } from "@/lib/technologyStackData";
+import { STACK_LAYERS, TECH_STACK, BUILD_IT_RIGHT } from "@/lib/technologyStackData";
 
 /* Modal layout ported from siacc BISCRSProductModal, re-themed with KEC
    palette: teal #02303D · orange #FF7D44 · warm cream #F1EEE7. */
@@ -19,11 +19,10 @@ const C = {
 
 const TABS = [
   { id: "overview", label: "Overview", icon: "📖" },
-  { id: "how", label: "How It Works", icon: "🔄" },
-  { id: "caps", label: "Capabilities", icon: "🧩" },
-  { id: "integration", label: "Integration", icon: "🔗" },
-  { id: "outcomes", label: "Outcomes", icon: "🎯" },
-  { id: "deploy", label: "Deployment", icon: "🚀" },
+  { id: "addresses", label: "What It Addresses", icon: "🧩" },
+  { id: "flow", label: "Engineering Flow", icon: "🔄" },
+  { id: "why", label: "Why It Matters", icon: "🎯" },
+  { id: "approach", label: "KEC Approach", icon: "🏛️" },
 ];
 
 const css = `
@@ -78,30 +77,62 @@ const Sec = ({ icon, children, first }) => (
   <div className="kt-sec" style={first ? undefined : { marginTop: 20 }}><span>{icon}</span> {children}</div>
 );
 
-function TabOverview({ t, name }) {
+const caps = { fontFamily: C.head, fontSize: 13, fontWeight: 700, color: C.teal, letterSpacing: ".02em", lineHeight: 1.5, margin: "0 0 10px" };
+
+function Paras({ items = [], style }) {
+  return items.map((t, i) => <p key={i} style={{ ...p, marginTop: i ? 12 : 0, ...style }}>{t}</p>);
+}
+
+function Checks({ items = [] }) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
+      {items.map((x, i) => (
+        <div key={i} className="kt-check">
+          <span style={{ color: C.orange, fontWeight: 800 }}>✓</span>
+          <span style={{ fontSize: 13.5, color: C.para, lineHeight: 1.6 }}>{x}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function FlowChips({ flow }) {
+  const parts = flow.split("→").map((x) => x.trim());
+  return (
+    <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8, margin: "14px 0" }}>
+      {parts.map((x, i) => (
+        <span key={i} style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+          <span className="kt-chip" style={{ fontSize: 11.5, background: C.tealSoft, borderColor: "transparent" }}>{x}</span>
+          {i < parts.length - 1 && <span style={{ color: C.orange, fontWeight: 800 }}>→</span>}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+function TabOverview({ t, name, layer }) {
+  const c = t.challenge;
   return (
     <div>
       <Sec icon="📖" first>Introduction</Sec>
       <div className="kt-card">
-        <p style={p}>{t.intro}</p>
-        <p style={{ ...p, marginTop: 12 }}>{t.overview}</p>
+        <div style={{ ...caps, color: C.orangeDeep, fontSize: 12.5 }}>{t.tagline}</div>
+        <p style={p}>{t.subtitle}</p>
+        {t.lead?.length > 0 && <Paras items={t.lead} style={{ marginTop: 12 }} />}
+        {t.leadTags && <div style={{ marginTop: 12, fontFamily: C.head, fontSize: 12, fontWeight: 600, color: C.muted }}>{t.leadTags}</div>}
       </div>
-      <Sec icon="🏛️">4 Pillars of {name}</Sec>
-      <div className="kt-card" style={{ background: `linear-gradient(135deg,${C.tealSoft} 0%,${C.orangeSoft} 100%)` }}>
-        <p style={{ fontSize: 13, color: C.para, marginBottom: 12 }}>The four building blocks this module is organised around:</p>
-        <div className="kt-grid2">
-          {t.pillars.map((x) => (
-            <div key={x.title} className="kt-pillar">
-              <div className="kt-pillar-icon">{x.icon}</div>
-              <div><div style={hd}>{x.title}</div><div style={sm}>{x.desc}</div></div>
-            </div>
-          ))}
-        </div>
+      <Sec icon="⚙️">The Engineering Challenge</Sec>
+      <div className="kt-card">
+        <div style={caps}>{c.heading}</div>
+        <Paras items={c.paras} />
+        {c.listIntro && <p style={{ ...p, margin: "14px 0 8px", fontWeight: 600, color: C.teal }}>{c.listIntro}</p>}
+        {c.list && <Checks items={c.list} />}
+        {c.closing && <Paras items={c.closing} style={{ marginTop: 14 }} />}
       </div>
       <Sec icon="📋">Module Details</Sec>
       <div className="kt-card">
         <div style={{ display: "flex", flexWrap: "wrap", gap: 16 }}>
-          {[["Module", name], ["Stack", "KEC Integrated CBG Technology Stack"], ["Stage", t.stage], ["Focus Area", t.focus]].map(([l, v]) => (
+          {[["Module", name], ["Stack", "KEC Integrated CBG Technology Stack"], ["Focus Area", t.focus], ["Layer", layer.label]].map(([l, v]) => (
             <div key={l} style={{ minWidth: 160, flex: 1 }}>
               <div style={{ fontSize: 10.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".07em", color: C.muted, marginBottom: 3 }}>{l}</div>
               <div style={{ fontFamily: C.head, fontSize: 13, fontWeight: 700, color: C.teal }}>{v}</div>
@@ -113,127 +144,103 @@ function TabOverview({ t, name }) {
   );
 }
 
-function TabHow({ t, name }) {
+function TabAddresses({ t, name }) {
+  const a = t.addresses;
+  const odd = a.items.length % 2 === 1;
   return (
     <div>
-      <Sec icon="🔄" first>How {name} Works</Sec>
-      <div className="kt-card">
-        <p style={{ ...p, fontSize: 13.5, marginBottom: 16 }}>Typical flow through this module, from input to hand-off:</p>
-        {t.steps.map((s, i) => (
-          <div key={i} className="kt-step">
-            <div className="kt-step-num">{String(i + 1).padStart(2, "0")}</div>
-            <div className="kt-step-text">{s}</div>
-          </div>
-        ))}
-        <div style={{ marginTop: 16, background: C.orangeSoft, border: "1px solid rgba(255,125,68,.3)", borderRadius: 8, padding: "13px 16px" }}>
-          <div style={{ fontFamily: C.head, fontSize: 12, fontWeight: 700, color: C.orangeDeep, marginBottom: 5 }}>ℹ️ Indicative Description</div>
-          <p style={{ fontSize: 13, color: "#7A3A15", lineHeight: 1.65, margin: 0 }}>
-            Process architecture is being developed. Final configuration depends on site, feedstock and plant design.
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function TabCaps({ t }) {
-  return (
-    <div>
-      <Sec icon="🧩" first>Key Capabilities</Sec>
-      <div className="kt-card" style={{ padding: 0, overflow: "hidden" }}>
-        {t.caps.map((c, i) => (
-          <div key={i} className="kt-phase" style={{ padding: "11px 16px" }}>
-            <div className="kt-phase-n">{String(i + 1).padStart(2, "0")}</div>
-            <div style={{ fontSize: 13.5, color: C.para, lineHeight: 1.65, paddingTop: 3 }}>{c}</div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function TabIntegration({ t, name, onSelect }) {
-  const all = t.sync === "All modules";
-  const links = all ? [] : t.sync.split(" · ");
-  return (
-    <div>
-      <Sec icon="🔗" first>Connects With</Sec>
-      <div className="kt-card">
-        <p style={{ ...p, fontSize: 13.5, marginBottom: 14 }}>
-          {all
-            ? `${name} is the shared backbone — every other module in the stack connects to it.`
-            : `${name} exchanges data and flows with these neighbouring modules. Tap one to open it.`}
-        </p>
-        {!all && (
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-            {links.map((l) => (
-              <button key={l} className="kt-chip" onClick={() => onSelect?.(l)}>{l}</button>
-            ))}
-          </div>
-        )}
-      </div>
-      <Sec icon="🧱">Why Modular</Sec>
-      <div className="kt-card">
+      <Sec icon="🧩" first>What {name} Addresses</Sec>
+      <div className="kt-card" style={{ background: `linear-gradient(135deg,${C.tealSoft} 0%,${C.orangeSoft} 100%)` }}>
+        {a.heading && <div style={caps}>{a.heading}</div>}
+        <p style={{ fontSize: 13, color: C.para, marginBottom: 12 }}>{a.intro || `${a.items.length} focus areas this module is organised around:`}</p>
         <div className="kt-grid2">
-          {[
-            ["Monitoring", "Every module exposes instrumentation points."],
-            ["Synchronisation", "Gas, power and heat coordinated across modules."],
-            ["Process Optimisation", "Shared data enables tuning across stages."],
-            ["Operational Visibility", "One plant-wide picture for operators."],
-          ].map(([a, b]) => (
-            <div key={a} className="kt-check"><span style={{ color: C.orange, fontWeight: 800 }}>✓</span>
-              <span style={sm}><strong style={{ color: C.teal }}>{a}</strong> — {b}</span></div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function TabOutcomes({ t }) {
-  return (
-    <div>
-      <Sec icon="🎯" first>Intended Outcomes</Sec>
-      <div className="kt-card">
-        <div className="kt-grid2">
-          {t.outcomes.map((o) => (
-            <div key={o.t} style={{ background: C.cream, borderRadius: 8, padding: "12px 14px" }}>
-              <div style={{ fontSize: 15, marginBottom: 6, color: C.orange }}>◆</div>
-              <div style={hd}>{o.t}</div><div style={sm}>{o.d}</div>
+          {a.items.map((x, i) => (
+            <div key={x.title} className="kt-pillar" style={odd && i === a.items.length - 1 ? { gridColumn: "1 / -1" } : undefined}>
+              <div className="kt-pillar-icon" style={{ fontFamily: C.head, fontSize: 12, fontWeight: 700, color: C.teal }}>{String(i + 1).padStart(2, "0")}</div>
+              <div><div style={hd}>{x.title}</div><div style={sm}>{x.desc}</div></div>
             </div>
           ))}
         </div>
       </div>
-      <div style={{ background: `linear-gradient(135deg,${C.teal} 0%,${C.tealMid} 100%)`, borderRadius: 10, padding: "16px 20px" }}>
-        <div style={{ fontFamily: C.head, fontSize: 13, fontWeight: 700, color: "#fff", marginBottom: 6 }}>📌 Positioning Note</div>
-        <p style={{ fontSize: 12.5, color: "rgba(255,255,255,.8)", lineHeight: 1.65, margin: 0 }}>
-          This module is part of KEC's branded infrastructure and process framework being developed for integrated CBG ecosystem deployment.
-        </p>
+    </div>
+  );
+}
+
+function TabFlow({ t, name }) {
+  const f = t.flow;
+  return (
+    <div>
+      <Sec icon="🔄" first>Engineering Flow</Sec>
+      <div className="kt-card">
+        {f.heading && <div style={caps}>{f.heading}</div>}
+        {f.intro && <p style={{ ...p, marginBottom: 14 }}>{f.intro}</p>}
+        {!f.intro && <p style={{ ...p, fontSize: 13.5, marginBottom: 16 }}>How {name} moves through the engineering sequence:</p>}
+        {f.steps.map((s, i) => (
+          <div key={i} className="kt-step">
+            <div className="kt-step-num">{String(i + 1).padStart(2, "0")}</div>
+            <div className="kt-step-text" style={{ fontFamily: C.head, fontWeight: 600, color: C.teal, letterSpacing: ".02em" }}>{s}</div>
+          </div>
+        ))}
+        {f.closing && <div style={{ marginTop: 16 }}><Paras items={f.closing} /></div>}
       </div>
     </div>
   );
 }
 
-function TabDeploy({ t }) {
+function TabWhy({ t }) {
+  const w = t.why;
   return (
     <div>
-      <Sec icon="🚀" first>Deployment Path</Sec>
-      <div className="kt-card" style={{ padding: "6px 16px" }}>
-        {DEPLOY_PHASES.map((ph, i) => (
-          <div key={ph.t} className="kt-phase">
-            <div className="kt-phase-n">{String(i + 1).padStart(2, "0")}</div>
-            <div><div style={{ ...hd, fontSize: 12.5, color: C.orangeDeep }}>{ph.t}</div>
-              <div style={{ fontSize: 13, color: C.para, lineHeight: 1.65 }}>{ph.d}</div></div>
-          </div>
-        ))}
-      </div>
-      <Sec icon="📥">Inputs We Typically Need</Sec>
+      <Sec icon="🎯" first>Why It Matters</Sec>
       <div className="kt-card">
-        {t.inputs.map((x, i) => (
-          <div key={i} className="kt-check" style={{ marginBottom: 7 }}>
-            <span style={{ color: C.orange, fontWeight: 700 }}>✓</span><span style={{ fontSize: 13.5, color: C.para, lineHeight: 1.6 }}>{x}</span>
+        {w.heading && <div style={caps}>{w.heading}</div>}
+        <Paras items={w.paras} />
+        {w.listIntro && <p style={{ ...p, margin: "0 0 8px", fontWeight: 600, color: C.teal }}>{w.listIntro}</p>}
+        {w.list && <Checks items={w.list} />}
+        {w.closing && <Paras items={w.closing} style={{ marginTop: 14 }} />}
+        {w.pull && (
+          <div style={{ marginTop: 14, background: C.orangeSoft, border: "1px solid rgba(255,125,68,.3)", borderRadius: 8, padding: "13px 16px" }}>
+            {w.pull.map((l) => (
+              <div key={l} style={{ fontFamily: C.head, fontSize: 12.5, fontWeight: 700, color: C.orangeDeep, letterSpacing: ".04em", lineHeight: 1.8 }}>{l}</div>
+            ))}
           </div>
-        ))}
+        )}
+      </div>
+    </div>
+  );
+}
+
+function TabApproach({ t, name, title, onSelect }) {
+  const a = t.approach;
+  const others = Object.keys(TECH_STACK).filter((k) => k !== title);
+  return (
+    <div>
+      <Sec icon="🏛️" first>KEC Engineering Approach</Sec>
+      <div className="kt-card">
+        {a.heading && <div style={caps}>{a.heading}</div>}
+        {a.before && <Paras items={a.before} />}
+        <FlowChips flow={a.flow} />
+        {a.after && <Paras items={a.after} />}
+      </div>
+
+      <div style={{ background: `linear-gradient(135deg,${C.teal} 0%,${C.tealMid} 100%)`, borderRadius: 10, padding: "16px 20px", marginBottom: 14 }}>
+        <div style={{ fontFamily: C.head, fontSize: 13, fontWeight: 700, color: "#fff", marginBottom: 4 }}>📌 {BUILD_IT_RIGHT.title}</div>
+        <div style={{ fontFamily: C.head, fontSize: 11.5, fontWeight: 700, color: C.orange, letterSpacing: ".06em", marginBottom: 8 }}>{BUILD_IT_RIGHT.tagline}</div>
+        <p style={{ fontSize: 12.5, color: "rgba(255,255,255,.8)", lineHeight: 1.65, margin: 0 }}>{BUILD_IT_RIGHT.subtitle}</p>
+        <div style={{ marginTop: 10, fontFamily: C.head, fontSize: 11, fontWeight: 600, color: "rgba(255,255,255,.9)", letterSpacing: ".04em", lineHeight: 1.6 }}>{BUILD_IT_RIGHT.framework}</div>
+        <div style={{ marginTop: 10, fontFamily: C.head, fontSize: 11.5, fontWeight: 700, color: "#fff", lineHeight: 1.6 }}>
+          {BUILD_IT_RIGHT.philosophy.map((l) => <div key={l}>{l}</div>)}
+        </div>
+      </div>
+
+      <Sec icon="🔗">KEC Solution Ecosystem</Sec>
+      <div className="kt-card">
+        <p style={{ ...p, fontSize: 13.5, marginBottom: 14 }}>{name} is one part of the KEC engineering ecosystem. Tap a module to open it.</p>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+          {others.map((k) => (
+            <button key={k} className="kt-chip" onClick={() => onSelect?.(k)} title={TECH_STACK[k].focus}>{k}</button>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -282,7 +289,7 @@ export default function TechnologyModal({ tech, data, onClose, onSelect }) {
               <button className="kt-close" onClick={onClose} aria-label="Close">✕</button>
             </div>
             <div className="kt-strip">
-              {[["Layer", layer.label], ["Stage", data.stage], ["Focus", data.focus], ["Works With", data.sync]].map(([l, v]) => (
+              {[["Layer", layer.label], ["Focus", data.focus], ["Tagline", data.tagline]].map(([l, v]) => (
                 <div key={l} className="kt-strip-item">
                   <div className="kt-strip-label">{l}</div><div className="kt-strip-val">{v}</div>
                 </div>
@@ -298,18 +305,18 @@ export default function TechnologyModal({ tech, data, onClose, onSelect }) {
           </div>
 
           <div className="kt-body" ref={bodyRef}>
-            {tab === "overview" && <TabOverview t={data} name={tech.title} />}
-            {tab === "how" && <TabHow t={data} name={tech.title} />}
-            {tab === "caps" && <TabCaps t={data} />}
-            {tab === "integration" && <TabIntegration t={data} name={tech.title} onSelect={onSelect} />}
-            {tab === "outcomes" && <TabOutcomes t={data} />}
-            {tab === "deploy" && <TabDeploy t={data} />}
+            {tab === "overview" && <TabOverview t={data} name={tech.title} layer={layer} />}
+            {tab === "addresses" && <TabAddresses t={data} name={tech.title} />}
+            {tab === "flow" && <TabFlow t={data} name={tech.title} />}
+            {tab === "why" && <TabWhy t={data} />}
+            {tab === "approach" && <TabApproach t={data} name={tech.title} title={tech.title} onSelect={onSelect} />}
           </div>
 
           <div className="kt-footer">
             <div style={{ flex: 1, minWidth: 180 }}>
-              <div style={{ fontFamily: C.head, fontSize: 13.5, fontWeight: 700, color: "#fff" }}>Want {tech.title} in your CBG project?</div>
-              <div style={{ fontSize: 12, color: "rgba(255,255,255,.75)" }}>Speak with the KEC team about fit, timeline and scope.</div>
+              <div style={{ fontFamily: C.head, fontSize: 13.5, fontWeight: 700, color: "#fff" }}>{data.cta.heading}</div>
+              <div style={{ fontSize: 12, color: "rgba(255,255,255,.85)" }}>{data.cta.line}</div>
+              <div style={{ fontSize: 10.5, color: "rgba(255,255,255,.6)", marginTop: 2 }}>{data.cta.keywords}</div>
             </div>
             <Link href="/contact" className="kt-cta" onClick={onClose}>Talk to our team ↗</Link>
           </div>

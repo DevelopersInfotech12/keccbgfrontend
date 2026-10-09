@@ -16,7 +16,7 @@ import {
   Layers,
   SlidersHorizontal,
   Activity,
-  Waves,
+  Scale,
 } from "lucide-react";
 
 import SectionHeading from "@/comp/ui/SectionHeading";
@@ -31,92 +31,30 @@ const ORANGE = "#FF7D44";
 const GOLD = "#FF7D44";
 const INK = "#12100D";
 
-const INDUSTRIES = [
-  {
-    icon: Sprout,
-    title: "FeedSecure™",
-    body: "Feedstock planning and supply-chain continuity framework.",
-    tone: "navy",
-  },
-  {
-    icon: Blend,
-    title: "SmartMix™",
-    body: "Optimized substrate blending and input balancing architecture.",
-    tone: "wine",
-  },
-  {
-    icon: FlaskConical,
-    title: "HydroReact™",
-    body: "Digestion process integration and reaction-stage management.",
-    tone: "navy",
-  },
-  {
-    icon: MonitorSmartphone,
-    title: "DigiDigest™",
-    body: "Digital digestion monitoring and operational visibility layer.",
-    tone: "wine",
-  },
-  {
-    icon: Flame,
-    title: "BioHeat™",
-    body: "Heat recovery and thermal utilization framework.",
-    tone: "navy",
-  },
-  {
-    icon: Zap,
-    title: "EnergySync™",
-    body: "Utility synchronization across gas, power, and process systems.",
-    tone: "wine",
-  },
-  {
-    icon: Gauge,
-    title: "SmartPower™",
-    body: "Power optimization and electrical load coordination.",
-    tone: "navy",
-  },
-  {
-    icon: Wind,
-    title: "MethaPure™",
-    body: "Gas upgrading and methane purification process layer.",
-    tone: "wine",
-  },
-  {
-    icon: Layers,
-    title: "SmartCascade™",
-    body: "Multi-stage process and utility cascade coordination.",
-    tone: "navy",
-  },
-  {
-    icon: SlidersHorizontal,
-    title: "InfraCore™",
-    body: "Core infrastructure planning and integration framework.",
-    tone: "wine",
-  },
-  {
-    icon: MonitorSmartphone,
-    title: "SmartControl™",
-    body: "Centralized control architecture for plant operations.",
-    tone: "navy",
-  },
-  {
-    icon: BrainCircuit,
-    title: "ProcessSense™",
-    body: "Process analytics, diagnostics, and performance intelligence.",
-    tone: "wine",
-  },
-  {
-    icon: Activity,
-    title: "PlantVision™",
-    body: "Real-time visualization and plant-wide operational dashboard.",
-    tone: "navy",
-  },
-  {
-    icon: Waves,
-    title: "BioFlow IQ™",
-    body: "Flow intelligence, performance insights, and optimization layer.",
-    tone: "wine",
-  },
+// Card titles + icons only. All copy (card text + modal) lives in lib/technologyStackData.js
+const CARD_ICONS = [
+  [Sprout, "FeedSecure™"],
+  [Blend, "Smart Mix™"],
+  [FlaskConical, "HydroReact™"],
+  [MonitorSmartphone, "DigiDigest™"],
+  [Flame, "BioHeat™"],
+  [Zap, "Energy Sync™"],
+  [Gauge, "Smart Power™"],
+  [Scale, "Gas Balance™"],
+  [Wind, "MethaPure™"],
+  [Layers, "Smart Cascade™"],
+  [SlidersHorizontal, "InfraCore™"],
+  [MonitorSmartphone, "Smart Control™"],
+  [BrainCircuit, "Process Sense™"],
+  [Activity, "Plant Vision™"],
 ];
+
+const INDUSTRIES = CARD_ICONS.map(([icon, title], i) => ({
+  icon,
+  title,
+  body: TECH_STACK[title].subtitle,
+  tone: i % 2 === 0 ? "navy" : "wine",
+}));
 
 export default function Industries() {
   const reduced = useReducedMotion();
