@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Minus, Sprout, Factory, Building2, Leaf } from "lucide-react";
+import { Plus, Minus, Sprout, Factory, Building2, Leaf, ArrowRight } from "lucide-react";
 
 import SectionHeading from "@/comp/ui/SectionHeading";
 import { RevealSide } from "@/comp/motion/Reveal";
@@ -9,37 +9,251 @@ import { RevealSide } from "@/comp/motion/Reveal";
 const TEAL = "#02303D";
 const ORANGE = "#FF7D44";
 
+/**
+ * Answer format: array of blocks.
+ *  - "string"                          -> paragraph
+ *  - { type: "highlight", text }       -> highlighted callout line
+ *  - { type: "list", items: [] }       -> bullet list
+ *  - { type: "flow", steps: [] }       -> arrow-connected step chips
+ */
 const FAQS = [
     {
         icon: Sprout,
         tone: "leaf",
-        q: "What kind of feedstock do you accept from farmers?",
-        a: "We take crop residue, used cooking oil and other biomass leftovers most farms already produce. Our field team grades and prices it on pickup, so there's no separate lab visit before you get paid.",
+        q: "What is CBG Park™?",
+        a: [
+            "CBG Park™ is an integrated, cluster-based infrastructure model for developing CBG projects. Instead of developing every requirement separately, the park brings together key elements such as project infrastructure, feedstock ecosystem, common utilities, logistics, technology and market linkages within a coordinated development framework.",
+            { type: "highlight", text: "In simple terms: CBG Park™ is more than a CBG plant, it is the ecosystem around the plant." },
+        ],
     },
     {
         icon: Factory,
         tone: "blush",
-        q: "How does an industry partnership with KEC work?",
-        a: "You supply your waste stream — agricultural, food-processing or used oil — on a standing contract, and we handle collection logistics. Volumes and pickup schedule are set together during onboarding, and pricing is reviewed quarterly.",
+        q: "Why should I consider CBG Park™ instead of developing a standalone CBG plant?",
+        a: [
+            "A standalone project may require the developer to independently coordinate land, infrastructure, feedstock, technology, project execution, logistics, approvals and market connectivity.",
+            "CBG Park™ is designed to bring several of these requirements into a shared and coordinated ecosystem, helping project developers focus on their core CBG business rather than building every supporting infrastructure element from scratch.",
+            { type: "highlight", text: "The objective is simpler project development through an integrated infrastructure model." },
+        ],
     },
     {
         icon: Building2,
         tone: "leaf",
-        q: "What does the plant partnership / franchise model include?",
-        a: "A regional processing unit built to our spec, sourcing support from our farmer and industry network, and shared access to offtake buyers. We stay involved through commissioning and the first production cycles.",
+        q: "Is CBG Park™ a single CBG plant?",
+        a: [
+            "No. CBG Park™ is designed as a cluster of CBG projects supported by common infrastructure and ecosystem services.",
+            "This allows individual project units to operate within a larger ecosystem while benefiting from shared facilities and coordinated support.",
+            "The original KEC CBG Park model specifically describes clustered CBG units supported by common facilities.",
+        ],
     },
     {
         icon: Leaf,
         tone: "blush",
-        q: "Is the biofuel you produce compliant with current emission norms?",
-        a: "Yes — every batch is tested against BIS and Ministry of Petroleum specs before it leaves the plant, and batch-level test reports are available to buyers on request.",
+        q: "What infrastructure and support can be available within a CBG Park™?",
+        a: [
+            "Depending on the specific park and project structure, the ecosystem can include:",
+            {
+                type: "list",
+                items: [
+                    "Common utilities and infrastructure",
+                    "Feedstock aggregation and handling",
+                    "Internal roads and logistics support",
+                    "CBG processing/dispatch infrastructure",
+                    "Weighing and storage facilities",
+                    "Project development support",
+                    "Technology support",
+                    "EPC & PMC services",
+                    "Training and technical support",
+                    "Market/offtake linkage support",
+                ],
+            },
+            "The exact facilities will vary according to the location, park design and project requirements. KEC's published CBG Park model lists several of these common services.",
+        ],
     },
     {
         icon: Sprout,
         tone: "leaf",
-        q: "How fast do farmers get paid after pickup?",
-        a: "Payment is released within 48 hours of pickup, straight to the bank account or UPI ID registered with our field team — no waiting on a billing cycle.",
+        q: "Do I need to arrange the feedstock myself?",
+        a: [
+            "Feedstock is one of the most important parts of any CBG project, and CBG Park™ is designed to address this requirement as part of the wider ecosystem.",
+            "The model can include feedstock aggregation, sourcing and supply-chain support, helping connect CBG projects with suitable biomass and organic-waste sources.",
+            "However, feedstock availability remains project- and location-specific and must be assessed during project development.",
+        ],
     },
+    {
+        icon: Factory,
+        tone: "blush",
+        q: "What about land and basic infrastructure?",
+        a: [
+            "One of the advantages of a park-based model is that land and common infrastructure can be planned at the park level rather than every developer having to independently create an entire industrial ecosystem.",
+            "Depending on the particular CBG Park™, KEC may support land identification/procurement, project planning and common infrastructure development.",
+            "The exact land arrangement, lease/ownership structure and infrastructure available will depend on the individual park and project.",
+        ],
+    },
+    {
+        icon: Building2,
+        tone: "leaf",
+        q: "How will the CBG produced in the park reach the market?",
+        a: [
+            "CBG Park™ is designed with the downstream side of the value chain in mind and not only production.",
+            "The ecosystem can include support for CBG transportation, filling/dispatch infrastructure and market/offtake linkages, including connections with relevant OMC/CGD opportunities where applicable.",
+            "However, offtake arrangements are project-specific and should not be treated as an automatic or unconditional guarantee.",
+            "India's GOBARdhan framework also recognizes structured plant-to-CGD mapping and offtake mechanisms as part of strengthening the CBG ecosystem.",
+        ],
+    },
+    // {
+    //     icon: Leaf,
+    //     tone: "blush",
+    //     q: "Can someone with limited experience in CBG participate in CBG Park™?",
+    //     a: [
+    //         "Yes, that is one of the important use cases of the model.",
+    //         "CBG Park™ is intended to make participation in the CBG sector more structured by bringing together project development, technology, engineering, infrastructure and ecosystem support.",
+    //         "An entrepreneur does not necessarily need to build every part of the CBG value chain independently.",
+    //         "KEC's original CBG Park positioning specifically identifies entrepreneurs, startups, corporates and government among the intended users of the model.",
+    //     ],
+    // },
+    // {
+    //     icon: Sprout,
+    //     tone: "leaf",
+    //     q: "Does CBG Park™ guarantee returns, financing, subsidy or offtake?",
+    //     a: [
+    //         "No. CBG is an infrastructure and energy business, and project economics depend on factors such as feedstock availability and cost, plant capacity, technology, CAPEX, financing terms, operating performance, logistics, offtake arrangements and applicable government policies.",
+    //         "CBG Park™ is designed to create a more integrated project ecosystem and can facilitate relevant project-development and financing support, but investment returns, financing approval, subsidy and commercial outcomes cannot be guaranteed.",
+    //     ],
+    // },
+    // {
+    //     icon: Factory,
+    //     tone: "blush",
+    //     q: "What does KEC Agritech actually provide in a CBG Park™?",
+    //     a: [
+    //         "KEC Agritech's role can extend beyond EPC. Depending on the project structure, KEC can support the journey across:",
+    //         {
+    //             type: "flow",
+    //             steps: [
+    //                 "Project Concept",
+    //                 "Feasibility",
+    //                 "Development",
+    //                 "Technology",
+    //                 "PMC/EPC",
+    //                 "Infrastructure",
+    //                 "Feedstock Ecosystem",
+    //                 "Commissioning",
+    //                 "O&M / Commercialization",
+    //             ],
+    //         },
+    //         "The objective is to provide an integrated project-development ecosystem, rather than leaving the investor to coordinate multiple disconnected vendors.",
+    //         "KEC currently positions itself across EPC, PMC, technology transfer, O&M and CBG Park development.",
+    //     ],
+    // },
+    // {
+    //     icon: Building2,
+    //     tone: "leaf",
+    //     q: "What are the key benefits of investing in a CBG Park™ ecosystem?",
+    //     a: [
+    //         "CBG Park™ is designed to bring important elements of CBG project development together within an integrated infrastructure framework. Potential benefits include:",
+    //         {
+    //             type: "list",
+    //             items: [
+    //                 "Access to planned common infrastructure, where available",
+    //                 "Coordinated project development and technical support",
+    //                 "A structured approach to feedstock sourcing and logistics",
+    //                 "Opportunities to benefit from shared facilities",
+    //                 "Support in exploring potential market and offtake connections",
+    //                 "Scope to develop projects within a larger renewable-energy ecosystem",
+    //             ],
+    //         },
+    //         "The actual benefits depend on the specific park, participation model and services included in the agreement.",
+    //     ],
+    // },
+    // {
+    //     icon: Leaf,
+    //     tone: "blush",
+    //     q: "How can CBG Park™ help simplify the CBG project development journey?",
+    //     a: [
+    //         "Developing a CBG project involves multiple interconnected activities, from feedstock assessment and technology selection to engineering, infrastructure, regulatory compliance and commercialization.",
+    //         "CBG Park™ aims to coordinate these requirements through a structured development model. Instead of independently managing every component, participants may be able to access relevant infrastructure and services through the park ecosystem.",
+    //         "The goal is to simplify coordination, improve project planning and create a more organized path from concept to commissioning.",
+    //     ],
+    // },
+    // {
+    //     icon: Sprout,
+    //     tone: "leaf",
+    //     q: "Can CBG Park™ create opportunities for entrepreneurs and new investors?",
+    //     a: [
+    //         "Yes. CBG Park™ is designed to create opportunities for entrepreneurs, investors and businesses interested in participating in the renewable-energy sector.",
+    //         "Depending on the park's participation structure, opportunities may include developing individual CBG units, participating in associated infrastructure or exploring businesses connected to feedstock aggregation, logistics, equipment, operations and organic-fertilizer by-products.",
+    //         "The suitability of each opportunity depends on investment capacity, technical requirements and the commercial structure of the specific park.",
+    //     ],
+    // },
+    // {
+    //     icon: Factory,
+    //     tone: "blush",
+    //     q: "How can CBG Park™ support the growth of the CBG industry in India?",
+    //     a: [
+    //         "India's CBG industry requires more than individual production facilities. It also needs dependable feedstock supply chains, suitable infrastructure, efficient project execution and viable routes to market.",
+    //         "A park-based model can help organize these elements within a coordinated ecosystem. By bringing multiple projects and supporting services together, CBG Park™ aims to support a more structured approach to CBG development.",
+    //         "Over time, such models could contribute to the development of regional CBG clusters and a more connected renewable-gas value chain.",
+    //     ],
+    // },
+    // {
+    //     icon: Building2,
+    //     tone: "leaf",
+    //     q: "What is the long-term vision for CBG Park™?",
+    //     a: [
+    //         "The long-term vision is to develop a scalable model for CBG infrastructure that can be adapted to suitable locations and regional requirements.",
+    //         "The concept extends beyond individual plants to an ecosystem connecting agricultural resources, waste management, energy production, infrastructure and commercial opportunities.",
+    //         "As the network develops, the broader ambition is to support the growth of integrated CBG infrastructure across multiple regions, subject to project feasibility, investment, partnerships and local conditions.",
+    //     ],
+    // },
+    // {
+    //     icon: Leaf,
+    //     tone: "blush",
+    //     q: "Can CBG Park™ help create additional value from agricultural waste?",
+    //     a: [
+    //         "CBG production can convert suitable organic materials into compressed biogas, creating a productive use for feedstocks that might otherwise be underutilized or require different waste-management solutions.",
+    //         "The wider ecosystem may also create opportunities around digestate processing and the production or use of organic soil amendments, subject to their quality and applicable requirements.",
+    //         "By connecting biomass sources with energy infrastructure, CBG Park™ aims to support a more circular approach to resource utilization.",
+    //     ],
+    // },
+    // {
+    //     icon: Sprout,
+    //     tone: "leaf",
+    //     q: "What makes a park-based CBG model different from developing multiple independent plants?",
+    //     a: [
+    //         "The key difference is the approach to infrastructure and coordination.",
+    //         "Independent plants may need to arrange many supporting facilities and services separately. A park-based model can plan selected infrastructure and services collectively, where technically and commercially feasible.",
+    //         "This may create opportunities for shared facilities, coordinated logistics and more consistent project planning.",
+    //         { type: "highlight", text: "The distinction is not simply the number of plants—it is how the surrounding ecosystem is planned and managed." },
+    //     ],
+    // },
+    // {
+    //     icon: Factory,
+    //     tone: "blush",
+    //     q: "Will CBG Park™ become more valuable as India's clean-energy sector grows?",
+    //     a: [
+    //         "The potential of CBG Park™ is linked to the broader development of India's renewable-gas ecosystem, including demand for cleaner fuels, suitable organic feedstocks, supporting infrastructure and commercial offtake arrangements.",
+    //         "As the sector evolves, well-planned CBG parks could offer a structured platform for developing projects and connecting participants across the value chain.",
+    //         "However, the commercial success of any individual park will depend on its execution, feedstock economics, technology, financing, regulatory environment and market access. Growth in the wider sector does not automatically guarantee returns for individual investors.",
+    //     ],
+    // },
+    // {
+    //     icon: Building2,
+    //     tone: "leaf",
+    //     q: "What role can CBG Park™ play in rural economic development?",
+    //     a: [
+    //         "A well-developed CBG ecosystem can create opportunities across several parts of the rural value chain, including biomass collection, transportation, plant operations, maintenance and the handling of suitable organic by-products.",
+    //         "By connecting agricultural resources with renewable-energy infrastructure, CBG Park™ can help create avenues for local business participation and employment.",
+    //         "The scale of these benefits will depend on the project's location, operating model, feedstock network and workforce requirements.",
+    //     ],
+    // },
+    // {
+    //     icon: Leaf,
+    //     tone: "blush",
+    //     q: "Why should businesses consider the CBG Park™ model for the future?",
+    //     a: [
+    //         "Businesses entering the CBG sector need to consider not only today's project requirements but also the long-term needs of infrastructure, feedstock security, operational efficiency and market connectivity.",
+    //     ],
+    // },
 ];
 
 /**
@@ -76,6 +290,63 @@ function FlipBadge({ open, tone }) {
     );
 }
 
+/** Renders one answer block (paragraph / highlight / list / flow). */
+function AnswerBlock({ block, accentColor }) {
+    if (typeof block === "string") {
+        return <p className="text-justify">{block}</p>;
+    }
+
+    if (block.type === "highlight") {
+        return (
+            <p
+                className="rounded-r-xl py-2 pl-4 pr-3 font-medium text-ink-900"
+                style={{ borderLeft: `3px solid ${ORANGE}`, background: `${ORANGE}12` }}
+            >
+                {block.text}
+            </p>
+        );
+    }
+
+    if (block.type === "list") {
+        return (
+            <ul className="flex flex-col gap-1.5">
+                {block.items.map((item) => (
+                    <li key={item} className="flex items-start gap-2.5">
+                        <span
+                            aria-hidden="true"
+                            className="mt-[9px] h-1.5 w-1.5 shrink-0 rounded-full"
+                            style={{ background: accentColor }}
+                        />
+                        <span>{item}</span>
+                    </li>
+                ))}
+            </ul>
+        );
+    }
+
+    if (block.type === "flow") {
+        return (
+            <div className="flex flex-wrap items-center gap-x-1.5 gap-y-2">
+                {block.steps.map((step, i) => (
+                    <span key={step} className="flex items-center gap-1.5">
+                        <span
+                            className="rounded-full px-3 py-1 text-[12.5px] font-semibold"
+                            style={{ background: `${TEAL}0f`, color: TEAL, border: `1px solid ${TEAL}1f` }}
+                        >
+                            {step}
+                        </span>
+                        {i < block.steps.length - 1 && (
+                            <ArrowRight className="h-3.5 w-3.5 shrink-0" style={{ color: ORANGE }} aria-hidden="true" />
+                        )}
+                    </span>
+                ))}
+            </div>
+        );
+    }
+
+    return null;
+}
+
 function FaqCard({ item, open, onToggle }) {
     const { icon: Icon, tone, q, a } = item;
     const accentColor = tone === "blush" ? ORANGE : TEAL;
@@ -109,15 +380,17 @@ function FaqCard({ item, open, onToggle }) {
                 style={{ gridTemplateRows: open ? "1fr" : "0fr" }}
             >
                 <div className="overflow-hidden" style={{ perspective: "600px" }}>
-                    <p
-                        className="max-w-2xl pb-6 pl-9 text-[14px] leading-[1.7] text-ink-500 transition-all duration-400 ease-out sm:pl-9 text-justify"
+                    <div
+                        className="flex max-w-2xl flex-col gap-3 pb-6 pl-9 text-[14px] leading-[1.7] text-ink-500 transition-all duration-400 ease-out sm:pl-9"
                         style={{
                             opacity: open ? 1 : 0,
                             transform: open ? "translateZ(0px)" : "translateZ(-24px)",
                         }}
                     >
-                        {a}
-                    </p>
+                        {a.map((block, i) => (
+                            <AnswerBlock key={i} block={block} accentColor={accentColor} />
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>
@@ -199,4 +472,4 @@ export default function Faq() {
       `}</style>
         </section>
     );
-} 
+}
