@@ -7,6 +7,7 @@
 // admin page independently wrapped itself in its own sidebar AND re-ran the
 // login check, so navigating anywhere remounted the whole shell and
 // blanked the screen while it re-verified the token.
+import { Suspense } from "react";
 import { usePathname } from "next/navigation";
 import { AdminAuthProvider, useAdminAuthContext } from "@/lib/AdminAuthContext";
 import AdminLayout from "@/comp/admin/AdminLayout";
@@ -25,9 +26,11 @@ function Shell({ children }) {
   if (loading) return null;
 
   return (
-    <AdminLayout admin={admin} onLogout={logout}>
-      {children}
-    </AdminLayout>
+    <Suspense fallback={null}>
+      <AdminLayout admin={admin} onLogout={logout}>
+        {children}
+      </AdminLayout>
+    </Suspense>
   );
 }
 

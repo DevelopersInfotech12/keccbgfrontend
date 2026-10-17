@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Search, PenSquare, Trash2, Eye, EyeOff, Star, StarOff, RefreshCw, AlertCircle, BookOpen, ChevronLeft, ChevronRight } from "lucide-react";
 import { useAdminAuth } from "@/lib/useAdminAuth";
 import { adminApi } from "@/lib/adminApi";
@@ -9,29 +10,40 @@ import { C, TAG_COLORS, BLOG_CATEGORIES, BLOG_CATEGORY_LABELS } from "@/lib/admi
 const STATUS_OPTS = ["all", "published", "draft"];
 const CATEGORY_OPTS = [{ key: "all", label: "All" }, ...BLOG_CATEGORIES];
 
+const SECTION_BADGE = {
+  "kec-insights": { bg: "#EAF6EF", text: "#1A6A42" },
+  "bioenergy-brief": { bg: "#FEF3EF", text: "#7E3629" },
+  "blog": { bg: "#E6F0F5", text: "#02303D" },
+};
+
 function CategoryBadge({ category }) {
-  const isKec = category === "kec-insights";
+  const c = SECTION_BADGE[category] || SECTION_BADGE["bioenergy-brief"];
   return (
-    <span style={{ fontSize: 11, fontWeight: 600, padding: "3px 9px", borderRadius: 999, background: isKec ? "#EAF6EF" : "#FEF3EF", color: isKec ? "#1A6A42" : "#7E3629" }}>
+    <span style={{ fontSize: 11, fontWeight: 600, padding: "3px 9px", borderRadius: 999, background: c.bg, color: c.text }}>
       {BLOG_CATEGORY_LABELS[category] || category}
     </span>
   );
 }
 
-function TagBadge({ tag }) {
-  const c = TAG_COLORS[tag] || { bg: "#F3F6F4", text: "#374151" };
+function TagBadge({ tag, colors }) {
+  const c = colors?.[tag] || TAG_COLORS[tag] || { bg: "#F3F6F4", text: "#374151" };
   return <span style={{ fontSize: 11, fontWeight: 600, padding: "3px 9px", borderRadius: 999, background: c.bg, color: c.text }}>{tag}</span>;
 }
 
 export default function AdminBlogListScreen() {
   const { admin, loading: authLoading, logout } = useAdminAuth();
   const [blogs, setBlogs] = useState([]);
+  const [tagColors, setTagColors] = useState({});
   const [pagination, setPagination] = useState({ page: 1, pages: 1, total: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("all");
-  const [category, setCategory] = useState("all");
+  // Sidebar links (KEC Insights / BioEnergy Brief / Blog) arrive as ?category=…
+  const router = useRouter();
+  const urlCategory = useSearchParams().get("category");
+  const [category, setCategory] = useState(urlCategory || "all");
+  useEffect(() => { setCategory(urlCategory || "all"); setPage(1); }, [urlCategory]);
   const [selected, setSelected] = useState([]);
   const [bulkLoading, setBulkLoading] = useState(false);
   const [page, setPage] = useState(1);
@@ -52,6 +64,13 @@ export default function AdminBlogListScreen() {
   }, [page, search, status, category]);
 
   useEffect(() => { if (!authLoading) fetchBlogs(); }, [authLoading, fetchBlogs]);
+
+  useEffect(() => {
+    if (authLoading) return;
+    adminApi.getCategories("blog")
+      .then((res) => setTagColors(Object.fromEntries((res.data || []).map((c) => [c.name, c.color]))))
+      .catch(() => {});
+  }, [authLoading]);
 
   const handleToggleStatus = async (id) => { try { await adminApi.toggleBlogStatus(id); fetchBlogs(); } catch (e) { alert(e.message); } };
   const handleToggleFeatured = async (id) => { try { await adminApi.toggleBlogFeatured(id); fetchBlogs(); } catch (e) { alert(e.message); } };
@@ -107,7 +126,7 @@ export default function AdminBlogListScreen() {
         </div>
         <div style={{ display: "flex", gap: 6 }}>
           {CATEGORY_OPTS.map((c) => (
-            <button key={c.key} className={`filter-btn${category === c.key ? " active" : ""}`} onClick={() => { setCategory(c.key); setPage(1); }}>
+            <button key={c.key} className={`filter-btn${category === c.key ? " active" : ""}`} onClick={() => { setPage(1); router.replace(c.key === "all" ? "/admin/blogs" : `/admin/blogs?category=${c.key}`); }}>
               {c.label}
             </button>
           ))}
@@ -163,7 +182,7 @@ export default function AdminBlogListScreen() {
                   <div style={{ fontSize: 11.5, color: C.muted, marginTop: 3 }}>{blog.date} · {blog.readTime}</div>
                 </div>
                 <div className="hide-mobile"><CategoryBadge category={blog.category} /></div>
-                <div className="hide-mobile"><TagBadge tag={blog.tag} /></div>
+                <div className="hide-mobile"><TagBadge tag={blog.tag} colors={tagColors} /></div>
                 <div className="hide-mobile">
                   <span style={{ fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 999, background: isPublished ? C.successBg : C.warnBg, color: isPublished ? "#065F46" : "#92400E" }}>{blog.status}</span>
                 </div>

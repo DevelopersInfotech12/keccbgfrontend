@@ -5,7 +5,7 @@
 // this is the layout style, the detail page (BlogDetailClient.jsx) is
 // styled to match siacc's dashboard-card article template instead.
 
-import { useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Clock } from "lucide-react";
 
@@ -18,7 +18,10 @@ import { BLOGS as FALLBACK_BLOGS, tagColors } from "@/lib/blogData";
 import OtherHero from "@/comp/OtherHero";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
-const CATEGORIES = ["All", ...Object.keys(tagColors)];
+
+// Tag colours come from the backend category list (admin can add/delete
+// categories); the static tagColors map is only the offline fallback.
+const TagColorsContext = createContext(tagColors);
 
 // Two public blog verticals — every post is assigned to exactly one by the
 // admin. "All" shows both together; picking one filters to just that
@@ -27,6 +30,7 @@ const SECTIONS = [
   { key: "all", label: "All" },
   { key: "kec-insights", label: "KEC Insights" },
   { key: "bioenergy-brief", label: "The BioEnergy Brief" },
+  { key: "blog", label: "Blog" },
 ];
 
 // color den — swap here, whole page follow
@@ -36,7 +40,8 @@ const LEAF_DARK = "#1A6A42";
 const LEAF_LIGHT = "#2E9E63";
 
 function TagLabel({ tag }) {
-  const color = tagColors[tag]?.text || TAG_FALLBACK;
+  const colors = useContext(TagColorsContext);
+  const color = colors[tag]?.text || TAG_FALLBACK;
   return (
     <span className="font-display text-[12.5px] font-bold" style={{ color }}>
       {tag}
@@ -95,6 +100,7 @@ function SecondaryStoryRow({ post }) {
 // Big image tile, dark-gradient bottom, headline overlaid. Used for the
 // "double feature" band between the top story and the latest-articles grid.
 function MiddleFeatureCard({ post }) {
+  const colors = useContext(TagColorsContext);
   return (
     <a href={`/blog/${post.slug}`} className="group relative block aspect-[16/11] overflow-hidden rounded-2xl">
       <img
@@ -106,7 +112,7 @@ function MiddleFeatureCard({ post }) {
       />
       <div aria-hidden="true" className="absolute inset-0" style={{ background: `linear-gradient(180deg, ${INK_900}0d 0%, ${INK_900}26 45%, ${INK_900}d1 100%)` }} />
       <div className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-md bg-white/90 px-2.5 py-1 text-[11px] font-bold backdrop-blur">
-        <span style={{ color: tagColors[post.tag]?.text || TAG_FALLBACK }}>{post.tag}</span>
+        <span style={{ color: colors[post.tag]?.text || TAG_FALLBACK }}>{post.tag}</span>
         <span className="text-ink-300">· {post.readTime}</span>
       </div>
       <h3 className="absolute inset-x-4 bottom-4 font-display text-[17px] font-bold leading-snug text-white sm:text-[19px]">
@@ -146,6 +152,7 @@ export default function BlogScreen() {
   const [activeSection, setActiveSection] = useState("all");
   const [activeCategory, setActiveCategory] = useState("All");
   const [allBlogs, setAllBlogs] = useState(FALLBACK_BLOGS);
+  const [apiCats, setApiCats] = useState(null); // [{ name, color }] from /categories?type=blog
 
   useEffect(() => {
     (async () => {
@@ -160,6 +167,31 @@ export default function BlogScreen() {
       }
     })();
   }, []);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch(`${API_URL}/categories?type=blog`, { cache: "no-store" });
+        const data = await res.json();
+        if (data.success) setApiCats(data.data || []);
+      } catch {
+        // keep static fallback categories
+      }
+    })();
+  }, []);
+
+  const colorMap = useMemo(() => {
+    const fromPosts = Object.fromEntries(allBlogs.filter((p) => p.tag && p.tagStyle).map((p) => [p.tag, p.tagStyle]));
+    const fromApi = Object.fromEntries((apiCats || []).map((c) => [c.name, c.color]));
+    return { ...tagColors, ...fromPosts, ...fromApi };
+  }, [allBlogs, apiCats]);
+
+  // Topic filter chips: admin-managed list, plus any tag a live post still uses.
+  const CATEGORIES = useMemo(() => {
+    const base = apiCats ? apiCats.map((c) => c.name) : Object.keys(tagColors);
+    const used = apiCats ? allBlogs.map((p) => p.tag).filter(Boolean) : [];
+    return ["All", ...Array.from(new Set([...base, ...used]))];
+  }, [apiCats, allBlogs]);
 
   const filtered = useMemo(() => {
     let list = activeSection === "all" ? allBlogs : allBlogs.filter((p) => p.category === activeSection);
@@ -182,6 +214,7 @@ export default function BlogScreen() {
   const latest = (remainder.length >= 2 ? remainder.slice(2) : remainder).slice(0, LATEST_ROW_MAX);
 
   return (
+    <TagColorsContext.Provider value={colorMap}>
     <main className="min-h-screen bg-mist-50">
       <Header light />
       <OtherHero
@@ -324,5 +357,6 @@ export default function BlogScreen() {
       <CTASection />
       <Footer />
     </main>
+    </TagColorsContext.Provider>
   );
 }

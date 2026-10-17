@@ -5,7 +5,8 @@ import { Calendar, Eye, Share2, X } from "lucide-react";
 
 import SectionHeading from "@/comp/ui/SectionHeading";
 import TiltCard from "@/comp/ui/TiltCard";
-import { Reveal, Stagger, StaggerItem } from "@/comp/motion/Reveal";
+import { motion } from "framer-motion";
+import { Reveal } from "@/comp/motion/Reveal";
 import { INFOGRAPHICS as FALLBACK_INFOGRAPHICS, INFOGRAPHIC_CATEGORIES as FALLBACK_CATEGORIES } from "@/lib/infographicsData";
 
 const TEAL = "#02303D";
@@ -21,11 +22,11 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 function shareInfographic(item) {
   const url = typeof window !== "undefined" ? `${window.location.origin}/infographics#${item.slug}` : "";
   if (typeof navigator !== "undefined" && navigator.share) {
-    navigator.share({ title: item.title, url }).catch(() => {});
+    navigator.share({ title: item.title, url }).catch(() => { });
     return;
   }
   if (typeof navigator !== "undefined" && navigator.clipboard) {
-    navigator.clipboard.writeText(url).catch(() => {});
+    navigator.clipboard.writeText(url).catch(() => { });
   }
 }
 
@@ -43,7 +44,7 @@ function InfographicCard({ item, onView }) {
         type="button"
         onClick={() => onView(item)}
         aria-label={`View ${item.title}`}
-        className="relative block aspect-[4/5] w-full overflow-hidden text-left"
+        className="relative block aspect-square w-full overflow-hidden text-left"
       >
         <img
           src={item.img}
@@ -120,7 +121,7 @@ function Lightbox({ item, onClose }) {
         >
           <X className="h-4 w-4" aria-hidden="true" />
         </button>
-        <img src={item.img} alt={item.title} className="max-h-[60vh] w-full object-cover" />
+        <img src={item.img} alt={item.title} className="aspect-square w-full object-cover" />
         <div className="p-6">
           <div className="flex items-center gap-2 text-[12px] text-ink-300">
             <Calendar className="h-3.5 w-3.5" aria-hidden="true" />
@@ -206,13 +207,21 @@ export default function Infographics() {
         {filtered.length === 0 ? (
           <div className="py-24 text-center text-ink-300">No infographics yet in this category — check back soon.</div>
         ) : (
-          <Stagger className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {filtered.map((item) => (
-              <StaggerItem key={item.slug}>
+          // Cards animate on mount (not via the parent's scroll-in variants):
+          // the list is swapped from fallback → API data after first paint, and
+          // children mounted late under a Stagger parent stayed at opacity 0.
+          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {filtered.map((item, i) => (
+              <motion.div
+                key={item.slug}
+                initial={{ opacity: 0, y: 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: Math.min(i, 8) * 0.06, ease: [0.22, 1, 0.36, 1] }}
+              >
                 <InfographicCard item={item} onView={setViewing} />
-              </StaggerItem>
+              </motion.div>
             ))}
-          </Stagger>
+          </div>
         )}
       </div>
 

@@ -1,10 +1,10 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import {
   LayoutDashboard, FileText, PenSquare, LogOut,
-  Menu, X, ChevronRight, Leaf, Camera, Image as ImageIcon, MapPin, Images,
+  Menu, X, ChevronRight, Leaf, Camera, Image as ImageIcon, MapPin, Images, Newspaper, BookOpen, Rss,
 } from "lucide-react";
 import { C } from "@/lib/adminConstants";
 
@@ -12,6 +12,10 @@ const navItems = [
   { href: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
   { href: "/admin/blogs", icon: FileText, label: "All Blogs" },
   { href: "/admin/blogs/create", icon: PenSquare, label: "Create Blog" },
+  // One entry per public blog section — opens All Blogs pre-filtered.
+  { href: "/admin/blogs?category=kec-insights", icon: Newspaper, label: "KEC Insights", sub: true },
+  { href: "/admin/blogs?category=bioenergy-brief", icon: Rss, label: "The BioEnergy Brief", sub: true },
+  { href: "/admin/blogs?category=blog", icon: BookOpen, label: "Blog", sub: true },
   { href: "/admin/case-studies", icon: Camera, label: "All Case Studies" },
   { href: "/admin/case-studies/create", icon: PenSquare, label: "Create Case Study" },
   { href: "/admin/infographics", icon: ImageIcon, label: "All Infographics" },
@@ -22,6 +26,7 @@ const navItems = [
 
 export default function AdminLayout({ children, admin, onLogout }) {
   const pathname = usePathname();
+  const sectionParam = useSearchParams().get("category");
   const [open, setOpen] = useState(false);
 
   return (
@@ -33,6 +38,13 @@ export default function AdminLayout({ children, admin, onLogout }) {
         .admin-nav-item.active { background:${C.sidebarActive}; color:#fff; border-left:3px solid ${C.accent}; }
         .admin-nav-item .chevron { margin-left:auto; opacity:0; transition:opacity 0.15s; }
         .admin-nav-item:hover .chevron, .admin-nav-item.active .chevron { opacity:1; }
+        /* Slim scrollbar. scrollbar-width is Firefox-only here — in Chrome it would override the ::-webkit rules below. */
+        @supports not selector(::-webkit-scrollbar) { .admin-nav-scroll { scrollbar-width:thin; scrollbar-color:rgba(255,255,255,0.25) transparent; } }
+        .admin-nav-scroll::-webkit-scrollbar { width:3px; }
+        .admin-nav-scroll::-webkit-scrollbar-button { display:none; width:0; height:0; }
+        .admin-nav-scroll::-webkit-scrollbar-track { background:transparent; }
+        .admin-nav-scroll::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.22); border-radius:999px; }
+        .admin-nav-scroll::-webkit-scrollbar-thumb:hover { background:rgba(255,255,255,0.4); }
         .admin-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:40; display:none; }
         @media(max-width:768px){ .admin-sidebar { transform:translateX(-100%); transition:transform 0.3s ease; }
           .admin-sidebar.open { transform:translateX(0); }
@@ -41,7 +53,7 @@ export default function AdminLayout({ children, admin, onLogout }) {
         .admin-topbar { height:60px; background:#fff; border-bottom:1px solid ${C.border}; display:flex; align-items:center; padding:0 24px; gap:16px; position:sticky; top:0; z-index:20; box-shadow:0 1px 4px rgba(10,19,16,0.06); }
         .admin-content { flex:1; padding:28px 24px; }
         @media(max-width:600px){ .admin-content { padding:18px 14px; } }
-        .logout-btn { display:flex; align-items:center; gap:8px; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.12); border-radius:8px; padding:8px 12px; color:rgba(255,255,255,0.65); font-size:12.5px; font-weight:500; cursor:pointer; width:100%; font-family:${C.sans}; transition:all 0.18s; }
+        .logout-btn { display:grid; place-items:center; flex-shrink:0; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.12); border-radius:8px; width:36px; height:36px; padding:0; color:rgba(255,255,255,0.65); font-size:12.5px; font-weight:500; cursor:pointer; font-family:${C.sans}; transition:all 0.18s; }
         .logout-btn:hover { background:rgba(220,38,38,0.15); border-color:rgba(220,38,38,0.3); color:#fca5a5; }
         @media(max-width:768px){ .admin-main { margin-left:0 !important; } .mobile-menu-btn { display:flex !important; } }
       `}</style>
@@ -62,16 +74,20 @@ export default function AdminLayout({ children, admin, onLogout }) {
           </div>
         </div>
 
-        <nav style={{ flex: 1, display: "flex", flexDirection: "column", gap: 3, paddingTop: 1 }}>
+        <nav className="admin-nav-scroll" style={{ flex: 1, minHeight: 0, overflowY: "auto", overflowX: "hidden", display: "flex", flexDirection: "column", gap: 3, paddingTop: 1, paddingBottom: 8, paddingRight: 10, scrollbarGutter: "stable" }}>
           <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", padding: "8px 16px 6px", marginTop: 4 }}>
             Navigation
           </div>
-          {navItems.map(({ href, icon: Icon, label }) => {
-            const active = pathname === href || (!href.endsWith("create") && pathname.startsWith(href) && pathname !== "/admin/blogs/create" && pathname !== "/admin/case-studies/create");
-            const exactActive = pathname === href;
+          {navItems.map(({ href, icon: Icon, label, sub }) => {
+            const [hrefPath, hrefQuery] = href.split("?");
+            const hrefSection = hrefQuery ? new URLSearchParams(hrefQuery).get("category") : null;
+            // "All Blogs" is only active with no section filter; section items match their ?category.
+            const exactActive =
+              pathname === hrefPath &&
+              (hrefSection ? sectionParam === hrefSection : hrefPath !== "/admin/blogs" || !sectionParam);
             return (
-              <Link key={href} href={href} className={`admin-nav-item${exactActive ? " active" : ""}`} onClick={() => setOpen(false)}>
-                <Icon size={17} />
+              <Link key={href} href={href} className={`admin-nav-item${exactActive ? " active" : ""}`} style={sub ? { marginLeft: 14, padding: "8px 14px", fontSize: 13 } : undefined} onClick={() => setOpen(false)}>
+                <Icon size={sub ? 15 : 17} />
                 <span>{label}</span>
                 <ChevronRight size={13} className="chevron" />
               </Link>
@@ -79,22 +95,21 @@ export default function AdminLayout({ children, admin, onLogout }) {
           })}
         </nav>
 
-        <div style={{ borderTop: "1px solid rgba(255,255,255,0.08)", padding: "4px 8px 16px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 8px 12px" }}>
+        <div style={{ borderTop: "1px solid rgba(255,255,255,0.08)", padding: "4px 8px 2px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 8px" }}>
             <div style={{ width: 34, height: 34, borderRadius: "50%", background: `linear-gradient(135deg, ${C.accent}, ${C.coral})`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: C.display, fontWeight: 700, fontSize: 13, color: "#fff", flexShrink: 0 }}>
               {admin?.name?.charAt(0).toUpperCase() || "A"}
             </div>
-            <div style={{ minWidth: 0 }}>
+            <div style={{ minWidth: 0, flex: 1 }}>
               <div style={{ fontFamily: C.display, fontSize: 13, fontWeight: 600, color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                 {admin?.name || "Admin"}
               </div>
               <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", textTransform: "capitalize" }}>{admin?.role || "admin"}</div>
             </div>
+            <button className="logout-btn" onClick={onLogout} title="Sign out" aria-label="Sign out">
+              <LogOut size={16} />
+            </button>
           </div>
-          <button className="logout-btn" onClick={onLogout}>
-            <LogOut size={14} />
-            Sign out
-          </button>
         </div>
       </aside>
 

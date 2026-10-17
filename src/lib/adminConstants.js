@@ -32,10 +32,14 @@ export const C = {
 export const BLOG_CATEGORIES = [
   { key: "kec-insights", label: "KEC Insights" },
   { key: "bioenergy-brief", label: "The BioEnergy Brief" },
+  { key: "blog", label: "Blog" },
 ];
 export const BLOG_CATEGORY_LABELS = BLOG_CATEGORIES.reduce((m, c) => ({ ...m, [c.key]: c.label }), {});
 
 // ── Blog categories ─────────────────────────────────────────
+// NOTE: TAGS / TAG_COLORS / INFOGRAPHIC_CATEGORIES are now only the offline
+// fallback. The live lists come from the backend (/api/categories) and are
+// editable in the admin form dropdowns (add + delete).
 export const TAGS = ["CBG Basics", "Policy & Incentives", "Feedstock", "Plant Operations", "Sustainability", "Industry News"];
 
 export const TAG_COLORS = {

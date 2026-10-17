@@ -68,7 +68,7 @@ export default function BlogPreview() {
 
         <Stagger className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {posts.map((post, i) => {
-            const tc = tagColors[post.tag] || { bg: "#EAF6EF", text: "#124B2F" };
+            const tc = post.tagStyle?.bg ? post.tagStyle : tagColors[post.tag] || { bg: "#EAF6EF", text: "#124B2F" };
             return (
               <StaggerItem key={post.slug} className="group">
                 <TiltCard

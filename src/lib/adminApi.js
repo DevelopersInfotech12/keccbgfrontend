@@ -117,6 +117,11 @@ export const adminApi = {
   updateGalleryImage: (id, data) => request(`/gallery/${id}`, { method: "PUT", body: JSON.stringify(data) }),
   deleteGalleryImage: (id) => request(`/gallery/${id}`, { method: "DELETE" }),
 
+  // Categories (blog "Tag / Category" + infographic category dropdowns)
+  getCategories: (type) => request(`/categories${type ? `?type=${type}` : ""}`),
+  createCategory: (type, name) => request("/categories", { method: "POST", body: JSON.stringify({ type, name }) }),
+  deleteCategory: (id) => request(`/categories/${id}`, { method: "DELETE" }),
+
   // Upload
   uploadImage,
 };

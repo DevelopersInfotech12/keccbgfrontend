@@ -4,9 +4,10 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Save, ArrowLeft, Upload, AlertCircle, CheckCircle2 } from "lucide-react";
 import { Label, Input } from "@/comp/admin/FormControls";
+import CategorySelect from "@/comp/admin/CategorySelect";
 import { useAdminAuth } from "@/lib/useAdminAuth";
 import { adminApi } from "@/lib/adminApi";
-import { C, EMPTY_INFOGRAPHIC, INFOGRAPHIC_CATEGORIES } from "@/lib/adminConstants";
+import { C, EMPTY_INFOGRAPHIC } from "@/lib/adminConstants";
 
 export default function AdminInfographicFormScreen({ infographicId }) {
   const router = useRouter();
@@ -106,9 +107,7 @@ export default function AdminInfographicFormScreen({ infographicId }) {
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 16 }}>
           <div>
             <Label required>Category</Label>
-            <select value={form.category} onChange={(e) => set("category", e.target.value)} style={{ width: "100%", padding: "9px 12px", border: `1.5px solid ${C.border}`, borderRadius: 8, fontFamily: C.sans, fontSize: 13, color: C.text, outline: "none" }}>
-              {INFOGRAPHIC_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
-            </select>
+            <CategorySelect type="infographic" value={form.category} onChange={(name) => set("category", name)} />
           </div>
           <div>
             <Label required>Date</Label>
@@ -119,7 +118,7 @@ export default function AdminInfographicFormScreen({ infographicId }) {
         <div style={{ marginBottom: 16 }}>
           <Label required>Image</Label>
           <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-            {form.img && <img src={form.img} alt="" style={{ width: 70, height: 88, objectFit: "cover", borderRadius: 8, border: `1.5px solid ${C.border}`, flexShrink: 0 }} />}
+            {form.img && <img src={form.img} alt="" style={{ width: 88, height: 88, objectFit: "cover", borderRadius: 8, border: `1.5px solid ${C.border}`, flexShrink: 0 }} />}
             <div style={{ flex: 1 }}>
               <Input value={form.img} onChange={(e) => set("img", e.target.value)} placeholder="Image URL, or upload below" style={{ marginBottom: 8 }} />
               <label style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12.5, fontWeight: 600, color: C.accent, cursor: "pointer" }}>

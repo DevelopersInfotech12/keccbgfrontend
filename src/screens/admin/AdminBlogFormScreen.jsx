@@ -7,9 +7,10 @@ import {
   AlertCircle, CheckCircle2,
 } from "lucide-react";
 import { Label, Input, Textarea, SectionCard, BlockEditor } from "@/comp/admin/FormControls";
+import CategorySelect from "@/comp/admin/CategorySelect";
 import { useAdminAuth } from "@/lib/useAdminAuth";
 import { adminApi } from "@/lib/adminApi";
-import { C, TAGS, TAG_COLORS, EMPTY_BLOG, BLOG_CATEGORIES } from "@/lib/adminConstants";
+import { C, TAG_COLORS, EMPTY_BLOG, BLOG_CATEGORIES } from "@/lib/adminConstants";
 
 export default function AdminBlogFormScreen({ blogId }) {
   const router = useRouter();
@@ -79,11 +80,42 @@ export default function AdminBlogFormScreen({ blogId }) {
   const [jsonText, setJsonText] = useState("");
   const [jsonError, setJsonError] = useState("");
 
+  // Array of blogs → create them all in one go (each item = one blog object).
+  const importMany = async (list) => {
+    const bad = list.findIndex((b) => !b || typeof b !== "object" || !b.title || !b.tag || !b.excerpt || !b.date || !b.img);
+    if (bad !== -1) { setJsonError(`Item #${bad + 1} is missing one of: title, tag, excerpt, date, img.`); return; }
+    if (!confirm(`Create ${list.length} blogs now?\n\nRunning this twice creates duplicates.`)) return;
+
+    setSaving(true);
+    let ok = 0; const failed = [];
+    for (const b of list) {
+      try {
+        await adminApi.createBlog({
+          ...EMPTY_BLOG, ...b,
+          slug: b.slug || autoSlug(b.title),
+          category: b.category || EMPTY_BLOG.category,
+          tagStyle: b.tagStyle || TAG_COLORS[b.tag] || EMPTY_BLOG.tagStyle,
+          seo: { ...EMPTY_BLOG.seo, ...b.seo },
+          sidebarCta: { ...EMPTY_BLOG.sidebarCta, ...b.sidebarCta },
+        });
+        ok++;
+      } catch (e) { failed.push(`${b.title}: ${e.message}`); }
+    }
+    setSaving(false);
+    if (failed.length) setJsonError(`Created ${ok} of ${list.length}. Failed — ${failed.join(" | ")}`);
+    else { showToast("success", `${ok} blogs created!`); setTimeout(() => router.push("/admin/blogs"), 800); }
+  };
+
   const loadJson = (raw) => {
     setJsonError("");
     try {
-      const parsed = JSON.parse(raw);
-      if (typeof parsed !== "object" || Array.isArray(parsed)) { setJsonError("JSON must be an object matching the blog schema."); return; }
+      let parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        if (parsed.length === 0) { setJsonError("JSON array is empty."); return; }
+        if (parsed.length > 1) { importMany(parsed); return; }
+        parsed = parsed[0];
+      }
+      if (!parsed || typeof parsed !== "object") { setJsonError("JSON must be a blog object (or an array of blog objects)."); return; }
       setForm((prev) => ({
         ...EMPTY_BLOG, ...prev, ...parsed,
         highlights: parsed.highlights?.length ? parsed.highlights : prev.highlights,
@@ -264,16 +296,18 @@ export default function AdminBlogFormScreen({ blogId }) {
                     })}
                   </div>
                   <div style={{ fontSize: 11.5, color: C.muted, marginTop: 5 }}>
-                    Decides which blog listing this post appears under — KEC Insights or The BioEnergy Brief.
+                    Decides which blog listing this post appears under — KEC Insights, The BioEnergy Brief or Blog.
                   </div>
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                   <div><Label required>Slug</Label><Input value={form.slug} onChange={(e) => set("slug", e.target.value)} placeholder="blog-slug" /></div>
                   <div>
                     <Label required>Tag / Category</Label>
-                    <select value={form.tag} onChange={(e) => { set("tag", e.target.value); set("tagStyle", TAG_COLORS[e.target.value] || EMPTY_BLOG.tagStyle); }} style={{ width: "100%", padding: "9px 12px", border: `1.5px solid ${C.border}`, borderRadius: 8, fontFamily: C.sans, fontSize: 13, color: C.text, outline: "none" }}>
-                      {TAGS.map((t) => <option key={t}>{t}</option>)}
-                    </select>
+                    <CategorySelect
+                      type="blog"
+                      value={form.tag}
+                      onChange={(name, cat) => setForm((f) => ({ ...f, tag: name, tagStyle: cat?.color || TAG_COLORS[name] || EMPTY_BLOG.tagStyle }))}
+                    />
                   </div>
                 </div>
                 <div><Label required>Excerpt</Label><Textarea value={form.excerpt} onChange={(e) => set("excerpt", e.target.value)} placeholder="Short summary shown in listing cards (1–2 sentences)…" style={{ minHeight: 72 }} /></div>

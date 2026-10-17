@@ -7,11 +7,11 @@ import { adminApi } from "@/lib/adminApi";
 import { C, INFOGRAPHIC_CATEGORIES } from "@/lib/adminConstants";
 
 const STATUS_OPTS = ["all", "published", "draft"];
-const CATEGORY_OPTS = ["all", ...INFOGRAPHIC_CATEGORIES];
 
 export default function AdminInfographicListScreen() {
   const { loading: authLoading } = useAdminAuth();
   const [items, setItems] = useState([]);
+  const [catNames, setCatNames] = useState(INFOGRAPHIC_CATEGORIES);
   const [pagination, setPagination] = useState({ page: 1, pages: 1, total: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -35,6 +35,15 @@ export default function AdminInfographicListScreen() {
   }, [page, search, status, category]);
 
   useEffect(() => { if (!authLoading) fetchItems(); }, [authLoading, fetchItems]);
+
+  useEffect(() => {
+    if (authLoading) return;
+    adminApi.getCategories("infographic")
+      .then((res) => setCatNames((res.data || []).map((c) => c.name)))
+      .catch(() => {});
+  }, [authLoading]);
+
+  const CATEGORY_OPTS = ["all", ...catNames];
 
   const handleToggleStatus = async (id) => { try { await adminApi.toggleInfographicStatus(id); fetchItems(); } catch (e) { alert(e.message); } };
   const handleDelete = async (id) => { if (!confirm("Delete this infographic permanently?")) return; try { await adminApi.deleteInfographic(id); fetchItems(); } catch (e) { alert(e.message); } };
