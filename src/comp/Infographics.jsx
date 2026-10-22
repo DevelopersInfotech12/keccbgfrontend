@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Calendar, Eye, Share2, X } from "lucide-react";
+import { ArrowRight, Calendar, Eye, Share2, X } from "lucide-react";
 
+import ShareMenu from "@/comp/ShareMenu";
 import SectionHeading from "@/comp/ui/SectionHeading";
 import TiltCard from "@/comp/ui/TiltCard";
 import { motion } from "framer-motion";
@@ -14,23 +15,11 @@ const ORANGE = "#FF7D44";
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
 /**
- * Content Guide Sec.8 — "Infographics" page. Required: a place to publish
- * daily infographics and share them from the website, each with image,
- * title, date/category, and a sharing/view option. Kept as a standalone
- * page component (not folded into Articles) per the guide's recommendation.
+ * Content Guide Sec.8 — "Infographics" page. Share opens ShareMenu
+ * (social targets, copy link, preview) pointing at /infographics/[slug],
+ * which carries the Open Graph tags for rich link previews.
  */
-function shareInfographic(item) {
-  const url = typeof window !== "undefined" ? `${window.location.origin}/infographics#${item.slug}` : "";
-  if (typeof navigator !== "undefined" && navigator.share) {
-    navigator.share({ title: item.title, url }).catch(() => { });
-    return;
-  }
-  if (typeof navigator !== "undefined" && navigator.clipboard) {
-    navigator.clipboard.writeText(url).catch(() => { });
-  }
-}
-
-function InfographicCard({ item, onView }) {
+function InfographicCard({ item, onView, onShare }) {
   return (
     <TiltCard
       max={8}
@@ -78,16 +67,32 @@ function InfographicCard({ item, onView }) {
         </h3>
 
         <div className="mt-4 flex items-center justify-between border-t border-ink-900/8 pt-4">
+          {/* View button: solid orange bg, white text -> teal fill sweeps in on hover, arrow slides */}
           <button
             type="button"
             onClick={() => onView(item)}
-            className="text-[13px] font-semibold text-ink-800 transition-colors hover:text-leaf-700"
+            aria-label={`View ${item.title}`}
+            className="group/view relative inline-flex items-center gap-2 overflow-hidden rounded-full border-2 px-5 py-2 text-[13.5px] font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_18px_-6px_rgba(255,125,68,0.6)] active:translate-y-0 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+            style={{ background: ORANGE, borderColor: ORANGE }}
           >
-            View
+            {/* fill layer sweeps in from left on hover */}
+            <span
+              aria-hidden="true"
+              className="absolute inset-0 -z-0 origin-left scale-x-0 transition-transform duration-300 ease-out group-hover/view:scale-x-100"
+              style={{ background: TEAL }}
+            />
+            <Eye className="relative z-10 h-4 w-4" strokeWidth={2} aria-hidden="true" />
+            <span className="relative z-10">View</span>
+            <ArrowRight
+              className="relative z-10 h-4 w-4 -translate-x-1 opacity-0 transition-all duration-300 group-hover/view:translate-x-0 group-hover/view:opacity-100"
+              strokeWidth={2.25}
+              aria-hidden="true"
+            />
           </button>
+
           <button
             type="button"
-            onClick={() => shareInfographic(item)}
+            onClick={() => onShare(item)}
             aria-label={`Share ${item.title}`}
             className="grid h-9 w-9 place-items-center rounded-full text-white transition-all duration-300 hover:opacity-90"
             style={{ background: ORANGE }}
@@ -100,7 +105,7 @@ function InfographicCard({ item, onView }) {
   );
 }
 
-function Lightbox({ item, onClose }) {
+function Lightbox({ item, onClose, onShare }) {
   if (!item) return null;
   return (
     <div
@@ -130,7 +135,7 @@ function Lightbox({ item, onClose }) {
           <h3 className="mt-2 font-display text-[18px] font-semibold text-ink-900">{item.title}</h3>
           <button
             type="button"
-            onClick={() => shareInfographic(item)}
+            onClick={() => onShare(item)}
             className="mt-5 inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-[13px] font-semibold text-white"
             style={{ background: ORANGE }}
           >
@@ -146,6 +151,7 @@ function Lightbox({ item, onClose }) {
 export default function Infographics() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [viewing, setViewing] = useState(null);
+  const [sharing, setSharing] = useState(null);
   const [items, setItems] = useState(FALLBACK_INFOGRAPHICS);
 
   useEffect(() => {
@@ -218,14 +224,15 @@ export default function Infographics() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: Math.min(i, 8) * 0.06, ease: [0.22, 1, 0.36, 1] }}
               >
-                <InfographicCard item={item} onView={setViewing} />
+                <InfographicCard item={item} onView={setViewing} onShare={setSharing} />
               </motion.div>
             ))}
           </div>
         )}
       </div>
 
-      <Lightbox item={viewing} onClose={() => setViewing(null)} />
+      <Lightbox item={viewing} onClose={() => setViewing(null)} onShare={setSharing} />
+      <ShareMenu item={sharing} onClose={() => setSharing(null)} />
     </section>
   );
 }

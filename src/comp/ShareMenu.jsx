@@ -1,0 +1,217 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
+import { Check, Copy, Link2, Mail, Share2, X } from "lucide-react";
+
+import { getInfographicShareText, getInfographicUrl } from "@/lib/infographicsData";
+
+const TEAL = "#02303D";
+const ORANGE = "#FF7D44";
+
+/* Copy with fallback for non-secure contexts (http / older browsers). */
+async function copyText(text) {
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+  } catch {
+    /* fall through to legacy path */
+  }
+  try {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.setAttribute("readonly", "");
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    const ok = document.execCommand("copy");
+    document.body.removeChild(ta);
+    return ok;
+  } catch {
+    return false;
+  }
+}
+
+const brandIcon = (path) => (
+  <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor" aria-hidden="true">
+    <path d={path} />
+  </svg>
+);
+
+const ICONS = {
+  whatsapp: brandIcon("M12.04 2a9.9 9.9 0 0 0-8.5 14.9L2 22l5.25-1.38A9.9 9.9 0 1 0 12.04 2Zm5.8 14.06c-.25.69-1.43 1.32-1.97 1.37-.5.05-1.13.07-1.82-.12a16.6 16.6 0 0 1-1.65-.61c-2.9-1.25-4.78-4.17-4.92-4.37-.14-.19-1.17-1.56-1.17-2.97 0-1.42.74-2.11 1-2.4.27-.29.58-.36.78-.36h.56c.18 0 .42-.07.65.5.25.58.84 2 .91 2.15.07.14.12.31.02.5-.1.2-.15.31-.29.48l-.44.51c-.14.14-.29.3-.12.58.17.29.75 1.24 1.62 2.01 1.12.99 2.06 1.3 2.35 1.45.29.14.46.12.63-.07.17-.2.73-.85.92-1.14.19-.29.39-.24.65-.14.27.1 1.7.8 1.99.95.29.14.48.22.55.34.07.12.07.7-.18 1.38Z"),
+  x: brandIcon("M17.53 3h3.07l-6.7 7.67L21.8 21h-6.17l-4.83-6.32L5.27 21H2.2l7.17-8.2L1.9 3h6.33l4.37 5.78L17.53 3Zm-1.08 16.17h1.7L7.33 4.73H5.5l10.95 14.44Z"),
+  linkedin: brandIcon("M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9.75h4v11.5H3V9.75Zm6.5 0h3.83v1.57h.05c.53-1 1.84-2.06 3.78-2.06 4.04 0 4.79 2.66 4.79 6.12v5.87h-4v-5.2c0-1.24-.02-2.84-1.73-2.84-1.73 0-2 1.35-2 2.75v5.29h-4V9.75Z"),
+  facebook: brandIcon("M13.5 21.5v-8h2.7l.4-3.2h-3.1V8.3c0-.9.25-1.5 1.55-1.5h1.65V3.95A22 22 0 0 0 14.3 3.8c-2.4 0-4.05 1.47-4.05 4.15v2.35H7.5v3.2h2.75v8h3.25Z"),
+};
+
+export default function ShareMenu({ item, onClose }) {
+  const [copied, setCopied] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [canNative, setCanNative] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    setCanNative(typeof navigator !== "undefined" && typeof navigator.share === "function");
+  }, []);
+
+  /* Esc to close + lock body scroll while open. */
+  useEffect(() => {
+    if (!item) return undefined;
+    const onKey = (e) => e.key === "Escape" && onClose();
+    document.addEventListener("keydown", onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [item, onClose]);
+
+  useEffect(() => setCopied(false), [item]);
+
+  if (!item || !mounted) return null;
+
+  const url = getInfographicUrl(item.slug, window.location.origin);
+  const text = getInfographicShareText(item);
+  const eu = encodeURIComponent(url);
+  const et = encodeURIComponent(text);
+
+  const targets = [
+    { key: "whatsapp", label: "WhatsApp", color: "#25D366", href: `https://wa.me/?text=${et}%20${eu}` },
+    { key: "x", label: "X", color: "#0F1419", href: `https://twitter.com/intent/tweet?text=${et}&url=${eu}` },
+    { key: "linkedin", label: "LinkedIn", color: "#0A66C2", href: `https://www.linkedin.com/sharing/share-offsite/?url=${eu}` },
+    { key: "facebook", label: "Facebook", color: "#1877F2", href: `https://www.facebook.com/sharer/sharer.php?u=${eu}` },
+  ];
+
+  const handleCopy = async () => {
+    const ok = await copyText(url);
+    if (ok) {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2200);
+    }
+  };
+
+  const handleNative = () =>
+    navigator.share({ title: item.title, text, url }).then(onClose).catch(() => {});
+
+  return createPortal(
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={`Share ${item.title}`}
+      className="fixed inset-0 z-[80] flex items-end justify-center bg-ink-900/70 p-4 backdrop-blur-sm sm:items-center"
+      onClick={onClose}
+    >
+      <div
+        className="relative w-full max-w-md overflow-hidden rounded-3xl bg-white shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close share dialog"
+          className="absolute right-3 top-3 z-10 grid h-9 w-9 place-items-center rounded-full bg-white/90 text-ink-900 shadow"
+        >
+          <X className="h-4 w-4" aria-hidden="true" />
+        </button>
+
+        {/* Share preview — mirrors what the link card looks like on social apps */}
+        <div className="border-b border-ink-900/8 bg-mist-50 p-4 pt-5">
+          <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.08em] text-ink-300">Share preview</p>
+          <div className="overflow-hidden rounded-2xl border border-ink-900/10 bg-white">
+            <img
+              src={item.img}
+              alt={item.title}
+              className="h-40 w-full object-cover"
+              onError={(e) => { e.currentTarget.style.display = "none"; }}
+            />
+            <div className="p-3">
+              <p className="text-[11px] uppercase tracking-wide text-ink-300">
+                {url.replace(/^https?:\/\//, "").split("/")[0]}
+              </p>
+              <p className="mt-0.5 line-clamp-2 font-display text-[14.5px] font-semibold leading-snug text-ink-900">
+                {item.title}
+              </p>
+              <p className="mt-0.5 text-[12px] text-ink-300">{item.category} · {item.date}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-5">
+          <p className="font-display text-[16px] font-semibold text-ink-900">Share this infographic</p>
+
+          <div className="mt-4 grid grid-cols-5 gap-2">
+            {targets.map((t) => (
+              <a
+                key={t.key}
+                href={t.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setTimeout(onClose, 150)}
+                className="group flex flex-col items-center gap-1.5 text-[11px] font-medium text-ink-800"
+              >
+                <span
+                  className="grid h-11 w-11 place-items-center rounded-full text-white transition-transform group-hover:scale-110"
+                  style={{ background: t.color }}
+                >
+                  {ICONS[t.key]}
+                </span>
+                {t.label}
+              </a>
+            ))}
+            <a
+              href={`mailto:?subject=${et}&body=${et}%0A${eu}`}
+              onClick={() => setTimeout(onClose, 150)}
+              className="group flex flex-col items-center gap-1.5 text-[11px] font-medium text-ink-800"
+            >
+              <span
+                className="grid h-11 w-11 place-items-center rounded-full text-white transition-transform group-hover:scale-110"
+                style={{ background: TEAL }}
+              >
+                <Mail className="h-5 w-5" aria-hidden="true" />
+              </span>
+              Email
+            </a>
+          </div>
+
+          <div className="mt-5 flex items-center gap-2 rounded-full border border-ink-900/12 bg-mist-50 py-1.5 pl-4 pr-1.5">
+            <Link2 className="h-4 w-4 shrink-0 text-ink-300" aria-hidden="true" />
+            <input
+              readOnly
+              value={url}
+              onFocus={(e) => e.target.select()}
+              aria-label="Infographic link"
+              className="min-w-0 flex-1 bg-transparent text-[12.5px] text-ink-800 outline-none"
+            />
+            <button
+              type="button"
+              onClick={handleCopy}
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-full px-4 py-2 text-[12.5px] font-semibold text-white transition-colors"
+              style={{ background: copied ? "#16A34A" : ORANGE }}
+            >
+              {copied ? <Check className="h-3.5 w-3.5" aria-hidden="true" /> : <Copy className="h-3.5 w-3.5" aria-hidden="true" />}
+              {copied ? "Copied" : "Copy"}
+            </button>
+          </div>
+          <p aria-live="polite" className="sr-only">{copied ? "Link copied to clipboard" : ""}</p>
+
+          {canNative && (
+            <button
+              type="button"
+              onClick={handleNative}
+              className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full border border-ink-900/12 py-2.5 text-[13px] font-semibold text-ink-800 hover:border-leaf-500"
+            >
+              <Share2 className="h-4 w-4" aria-hidden="true" />
+              More options…
+            </button>
+          )}
+        </div>
+      </div>
+    </div>,
+    document.body
+  );
+}

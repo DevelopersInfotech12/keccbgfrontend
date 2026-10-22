@@ -20,11 +20,11 @@ const ORANGE = "#FF7D44";
 function shareInfographic(item) {
   const url = typeof window !== "undefined" ? `${window.location.origin}/infographics#${item.slug}` : "";
   if (typeof navigator !== "undefined" && navigator.share) {
-    navigator.share({ title: item.title, url }).catch(() => {});
+    navigator.share({ title: item.title, url }).catch(() => { });
     return;
   }
   if (typeof navigator !== "undefined" && navigator.clipboard) {
-    navigator.clipboard.writeText(url).catch(() => {});
+    navigator.clipboard.writeText(url).catch(() => { });
   }
 }
 

@@ -61,3 +61,17 @@ export const INFOGRAPHICS = [
     img: IMG.ricePaddy,
   },
 ];
+
+export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://biocbg.com";
+
+export function getInfographicBySlug(slug) {
+  return INFOGRAPHICS.find((i) => i.slug === slug) || null;
+}
+
+export function getInfographicUrl(slug, origin = SITE_URL) {
+  return `${origin}/infographics/${slug}`;
+}
+
+export function getInfographicShareText(item) {
+  return `${item.title} — KEC CBG Park infographic`;
+}
