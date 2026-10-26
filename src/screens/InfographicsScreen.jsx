@@ -18,7 +18,6 @@ export default function InfographicsScreen() {
         subtitle="Visual insights into clean energy, waste management and India's evolving CBG ecosystem."
         cta={{ label: "Explore Infographics", href: "/contact" }}
       />
-      <div className="pt-[calc(96px+1.5rem)] sm:pt-[calc(104px+2rem)]" />
       <Infographics />
       <CTASection />
       <Footer />

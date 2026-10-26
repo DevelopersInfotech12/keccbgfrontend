@@ -16,7 +16,7 @@ export default function InfographicDetailClient({ item }) {
   return (
     <main className="min-h-screen bg-mist-50">
       <Header light />
-      <div className="container-shell pb-20 pt-[calc(96px+2rem)] sm:pt-[calc(104px+3rem)]">
+      <div className="container-shell pb-10 pt-[calc(96px+1.25rem)] sm:pt-[calc(104px+1.75rem)]">
         <Link
           href="/infographics"
           className="inline-flex items-center gap-2 text-[13px] font-semibold text-ink-800 hover:text-leaf-700"

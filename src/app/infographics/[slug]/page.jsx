@@ -46,6 +46,12 @@ export async function generateMetadata({ params }) {
   const description = `${item.title} — a ${item.category} infographic from KEC CBG Park, published ${item.date}.`;
   const url = getInfographicUrl(slug);
 
+  /* OG scrapers only fetch absolute image URLs — if an admin stored a
+     relative path, anchor it to the site origin so the card still renders. */
+  const ogImage = item.img
+    ? /^https?:\/\//i.test(item.img) ? item.img : new URL(item.img, SITE_URL).href
+    : undefined;
+
   return {
     metadataBase: new URL(SITE_URL),
     title: `${item.title} | KEC CBG Park`,
@@ -58,13 +64,13 @@ export async function generateMetadata({ params }) {
       type: "article",
       siteName: "KEC CBG Park",
       locale: "en_IN",
-      images: [{ url: item.img, width: 1200, height: 630, alt: item.title }],
+      images: ogImage ? [{ url: ogImage, width: 1200, height: 630, alt: item.title }] : [],
     },
     twitter: {
       card: "summary_large_image",
       title: item.title,
       description,
-      images: [item.img],
+      images: ogImage ? [ogImage] : [],
     },
   };
 }
