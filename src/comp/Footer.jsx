@@ -36,15 +36,15 @@ const COMPANIES = [
 ];
 
 const SOCIALS = [
-  { Icon: Facebook, label: "Bio CBG on Facebook", href: "https://www.facebook.com/" },
-  { Icon: Instagram, label: "Bio CBG on Instagram", href: "https://www.instagram.com/" },
-  { Icon: Youtube, label: "Bio CBG on YouTube", href: "https://www.youtube.com/" },
+  { Icon: Facebook, label: "Bio CBG on Facebook", href: "https://www.facebook.com/KECBiofuel/" },
+  { Icon: Instagram, label: "Bio CBG on Instagram", href: "https://www.instagram.com/kec_biofuel/" },
+  { Icon: Youtube, label: "Bio CBG on YouTube", href: "https://www.youtube.com/@kecbiofuel" },
   { Icon: Linkedin, label: "Bio CBG on LinkedIn", href: "https://www.linkedin.com/company/kec-biofuel/" },
 ];
 
 const CONTACT = [
   { Icon: Phone, text: "+91-8527626868", href: "tel:+918527626868", type: "external" },
-  { Icon: Mail, text: "info@kecbiofuel.com", href: "mailto:info@kecbiofuel.com", type: "external" },
+  { Icon: Mail, text: "info@kisanexperience.com", href: "mailto:info@kisanexperience.com", type: "external" },
   { Icon: MapPin, text: "429, 4th Floor, Ansal Chamber 2, Bikaji Cama Place, New Delhi - 110066", href: "/contact#contact-body", type: "internal" },
 ];
 
@@ -274,7 +274,7 @@ export default function Footer() {
 
         <div className="flex flex-col items-center justify-center gap-2 border-t border-mist-50/10 py-8 text-center text-[12.5px] text-mist-50/45">
           <p>
-            © 2026 Bio CBG. All rights reserved. |{" "}
+            © Copyright 2026 CBG Park™ -All rights reserved |{" "}
             <a
               href="http://developersinfotech.in/"
               target="_blank"
