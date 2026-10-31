@@ -39,7 +39,7 @@ const SOCIALS = [
   { Icon: Facebook, label: "Bio CBG on Facebook", href: "https://www.facebook.com/KECBiofuel/" },
   { Icon: Instagram, label: "Bio CBG on Instagram", href: "https://www.instagram.com/kec_biofuel/" },
   { Icon: Youtube, label: "Bio CBG on YouTube", href: "https://www.youtube.com/@kecbiofuel" },
-  { Icon: Linkedin, label: "Bio CBG on LinkedIn", href: "https://www.linkedin.com/company/kec-biofuel/" },
+  { Icon: Linkedin, label: "Bio CBG on LinkedIn", href: "https://www.linkedin.com/company/kecbiofuel/" },
 ];
 
 const CONTACT = [
